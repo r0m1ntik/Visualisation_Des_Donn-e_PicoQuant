@@ -1,4 +1,4 @@
-# This file is part of the VisualisationDesDonn�ePicoquant. See AUTHORS file for Copyright information
+# This file is part of the VisualisationDesDonnéePicoquant. See AUTHORS file for Copyright information
 
 # This program is free software you can redistribute it and / or modify it
 # under the terms of the GNU Affero General Public License as published by the
@@ -21,8 +21,41 @@ import io
 import json
 import copy
 
+# Stucture de stockage
+global photon, pixel, ligne, images, Data
 
-# Tag Types
+# Stockage des photons de chanque pixels
+photon = {
+    'nsync': 0,
+    'truetime': 0,
+    'dtime': 0
+}
+
+# Stockage des pixels de chaque lignes
+pixel = {
+    'pixel': 0,
+    'photon': []
+}
+
+# Stockage des lignes de chaque images
+ligne = {
+    'numeroligne': 1,
+    'pixel': []
+}
+
+# Stockage des images
+images = {
+    "numero_image": 1,
+    "ligne": []
+}
+
+# Stockage des toutes les données
+Data = {
+    "fichier": sys.argv[1],
+    "image": []
+}
+
+# Types de balises
 tyEmpty8 = struct.unpack(">i", bytes.fromhex("FFFF0008"))[0]
 tyBool8 = struct.unpack(">i", bytes.fromhex("00000008"))[0]
 tyInt8 = struct.unpack(">i", bytes.fromhex("10000008"))[0]
@@ -35,68 +68,36 @@ tyAnsiString = struct.unpack(">i", bytes.fromhex("4001FFFF"))[0]
 tyWideString = struct.unpack(">i", bytes.fromhex("4002FFFF"))[0]
 tyBinaryBlob = struct.unpack(">i", bytes.fromhex("FFFFFFFF"))[0]
 
-# Record types
+# Types de record
 rtPicoHarpT3 = struct.unpack(">i", bytes.fromhex('00010303'))[0]
 
+# Variables global
+global inputfile, outputfile, recNum, oflcorrection, truensync, dlen, isT2, globRes, numRecords, TPP, debutlignetime
 
-# global variables
-global inputfile
-global outputfile
-global recNum
-global oflcorrection
-global truensync
-global dlen
-global isT2
-global globRes
-global numRecords
-global TPP
-global debutlignetime
-global photon, ligne, pixel, Data, images
-
-
-photon = {"nsync": 0,
-          "truetime": 0,
-          "dtime": 0
-          }
-
-pixel = {'pixel': 0,
-         'photon': []
-         }
-
-ligne = {
-    'numeroligne': 1,
-    'pixel': []
-}
-
-images = {
-    "numero_image": 1,
-    "ligne": []
-}
-
-
-Data = {
-    "fichier": sys.argv[1],
-    "image": []
-}
-
-
+# Si le nombre d'argument est différent de 3 (on affiche l'erreur et on arrete le programme)
 if len(sys.argv) != 3:
-    print("USAGE: Read_PTU.py inputfile.PT3 outputfile.txt")
+    print("USAGE: python3 main.py data/pt3/SRV_2.pt3 ./data/json/SRV_2.json")
     exit(0)
 
+# Lecture du 2eme argument (r : lecture - b : format binaire)
 inputfile = open(sys.argv[1], "rb")
-# The following is needed for support of wide strings
+
+# Les éléments suivants sont nécessaires pour la prise en charge des chaînes larges
 outputfile = io.open(sys.argv[2], "w+", encoding="utf-8")
 
-# Check if inputfile is a valid PTU file
-# Python strings don't have terminating NULL characters, so they're stripped
+# Vérifiez si le fichier d'entrée est un fichier PTU valide
+# Les chaînes Python n'ont pas de caractères NULL de fin, elles sont donc supprimées
 Ident = inputfile.read(16).decode("utf-8").strip('\0')
+
+# Vérification du format du fichier
 if Ident != "PicoHarp 300":
-    print("ERROR: Ident invalid, this is not a PT3 file.")
+    print("ERREUR: Ce n'est pas un fichier PT3.")
     inputfile.close()
     outputfile.close()
     exit(0)
 
+
+# Récuperation des données (non utilisé dans le json)
 version = inputfile.read(6).decode("utf-8").strip('\0')
 CreatorName = inputfile.read(18).decode("utf-8").strip('\0')
 Creatorversion = inputfile.read(12).decode("utf-8").strip('\0')
@@ -104,14 +105,9 @@ fileTime = inputfile.read(18).decode("utf-8").strip('\0')
 linefeed = inputfile.read(2).decode("utf-8").strip('\0')
 Comment = inputfile.read(256).decode("utf-8").strip('\0')
 
-
-print("version : " + version)
-print("CreatorName : " + CreatorName)
-print("Creatorversion : " + Creatorversion)
-
-print("fileTime : " + fileTime)
-print("linefeed : " + linefeed)
-print("Comment : " + Comment)
+# Affichage des données récuperées
+print("Version: " + version + "\nCreateur: " +
+      CreatorName + "\nVersion: " + Creatorversion + "\nHeure du fichier: " + fileTime + "\nSaut de ligne: " + linefeed + "\nCommentaire: " + Comment)
 
 
 NoC, BpR, RoutChan, NboBoards, ActCu = struct.unpack(
@@ -167,7 +163,6 @@ unuse = struct.unpack("<i", inputfile.read(4))[0]
 inputfile.read(32)
 TPP = struct.unpack("<i", inputfile.read(4))[0] / 1e6
 inputfile.read(108)
-
 
 # get important variables from headers
 numRecords = Record
@@ -276,11 +271,6 @@ def readPT3():
             sys.stdout.flush()
 
 
-"""            i+=1
-            print(Data)
-        if i==3:break
-"""
-
 oflcorrection = 0
 dlen = 0
 
@@ -288,13 +278,9 @@ print("PicoHarp T3 data")
 
 
 readPT3()
-print("remplissage fichier")
+print("\nDebut du remplissage fichier...")
 json.dump(Data, outputfile)
 
 
 inputfile.close()
 outputfile.close()
-
-
-# 1001.578125
-# 1001.57421875

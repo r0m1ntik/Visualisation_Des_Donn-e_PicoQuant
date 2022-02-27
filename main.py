@@ -14,12 +14,14 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see < http: // www.gnu.org/licenses/>.
 
-import time
 import sys
 import struct
 import io
+import sys
 import json
 import copy
+
+from color import color
 
 # Stucture de stockage
 global photon, pixel, ligne, images, Data
@@ -96,7 +98,6 @@ if Ident != "PicoHarp 300":
     outputfile.close()
     exit(0)
 
-
 # Récuperation des données (non utilisé dans le json)
 version = inputfile.read(6).decode("utf-8").strip('\0')
 CreatorName = inputfile.read(18).decode("utf-8").strip('\0')
@@ -107,8 +108,7 @@ Comment = inputfile.read(256).decode("utf-8").strip('\0')
 
 # Affichage des données récuperées
 print("Version: " + version + "\nCreateur: " +
-      CreatorName + "\nVersion: " + Creatorversion + "\nHeure du fichier: " + fileTime + "\nSaut de ligne: " + linefeed + "\nCommentaire: " + Comment)
-
+      CreatorName + "\nVersion: " + Creatorversion + "\nDate|Heure: " + fileTime + "\nSaut de ligne: " + linefeed + "\nCommentaire: " + Comment)
 
 NoC, BpR, RoutChan, NboBoards, ActCu = struct.unpack(
     "iiiii", inputfile.read(20))
@@ -123,7 +123,6 @@ DisplayTimeAxisFrom = struct.unpack("<i", inputfile.read(4))[0]
 DisplayTimeAxisTo = struct.unpack("<i", inputfile.read(4))[0]
 DisplayCountAxisFrom = struct.unpack("<i", inputfile.read(4))[0]
 DisplayCountAxisTo = struct.unpack("<i", inputfile.read(4))[0]
-
 
 print("NoC : ", NoC)
 print("BpR : %d" % BpR)
@@ -144,7 +143,6 @@ print("DisplayTimeAxisTo : %d" % DisplayTimeAxisTo)
 print("DisplayCountAxisFrom : %d" % DisplayCountAxisFrom)
 print("DisplayCountAxisTo : %d" % DisplayCountAxisTo)
 
-
 # debutlec block suivant
 
 inputfile.read(184)
@@ -152,9 +150,7 @@ inputfile.read(184)
 Resol = struct.unpack("f", inputfile.read(4))[0]
 print("Resol : ", Resol)
 
-
 inputfile.read(132)
-
 
 Record = struct.unpack("<i", inputfile.read(4))[0]
 print("Record : ", Record)
@@ -168,7 +164,8 @@ inputfile.read(108)
 numRecords = Record
 globRes = Resol
 
-print("Writing %d records, this may take a while..." % numRecords)
+print("Écriture de {}%d{} enregistrements, cela peut prendre un certain temps...".format(
+    color.RED_HL, color.END) % numRecords)
 
 
 def gotOverflow(count):
@@ -209,7 +206,7 @@ def readPT3():
             recordData = "{0:0{1}b}".format(
                 struct.unpack("<I", inputfile.read(4))[0], 32)
         except:
-            print("The file ended earlier than expected, at record %d/%d."
+            print("Le dossier s'est terminé plus tôt que prévu, à l'enregistrement %d/%d."
                   % (recNum, numRecords))
             exit(0)
 
@@ -222,7 +219,7 @@ def readPT3():
             if dtime == 0:  # Not a marker, so overflow
                 oflcount += 1
             else:
-                #gotMarker(truensync, dtime)
+                # gotMarker(truensync, dtime)
                 if dtime == 4:
                     numimg += 1
                     debutligne = 0
@@ -255,7 +252,7 @@ def readPT3():
                     pixel["pixel"] = numpixel
                     pixel["photon"] = []
 
-                #gotPhoton(truensync, channel, dtime,numpixel)
+                # gotPhoton(truensync, channel, dtime,numpixel)
                 # ecriture du photon dans le pixel
                 photon["dtime"] = dtime
                 photon["nsync"] = truensync
@@ -265,8 +262,7 @@ def readPT3():
 
                 dlen += 1
         if recNum % 100000 == 0:
-
-            sys.stdout.write("\rProgress: %.1f%%" %
+            sys.stdout.write("\r{}La progression: %.1f%%{}".format(color.GREEN, color.END) %
                              (float(recNum)*100/float(numRecords)))
             sys.stdout.flush()
 
@@ -276,11 +272,9 @@ dlen = 0
 
 print("PicoHarp T3 data")
 
-
 readPT3()
-print("\nDebut du remplissage fichier...")
+print("\nDebut du remplissage fichier...\n")
 json.dump(Data, outputfile)
-
 
 inputfile.close()
 outputfile.close()

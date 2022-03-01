@@ -21,6 +21,9 @@ import sys
 import json
 import copy
 
+from pytictoc import TicToc
+
+
 class color:
     BOLD = '\033[1m'
     ITALIC = '\033[3m'
@@ -44,38 +47,40 @@ class color:
     END = '\033[0m'
 
 
+# Debut du programme
+t = TicToc()
+
 # Stucture de stockage
-global photon, pixel, ligne, images, Data
+global pt, px, lg, img, Data
 
 # Stockage des photons de chanque pixels
-photon = {
+pt = {
     'nsync': 0,
-    'truetime': 0,
     'dtime': 0
 }
 
 # Stockage des pixels de chaque lignes
-pixel = {
-    'pixel': 0,
-    'photon': []
+px = {
+    'px': 0,
+    'ph': []
 }
 
 # Stockage des lignes de chaque images
-ligne = {
-    'numeroligne': 1,
-    'pixel': []
+lg = {
+    'nlg': 1,
+    'px': []
 }
 
 # Stockage des images
-images = {
-    "numero_image": 1,
-    "ligne": []
+img = {
+    "nimg": 1,
+    "lg": []
 }
 
 # Stockage des toutes les données
 Data = {
-    "fichier": sys.argv[1],
-    "image": []
+    "file": sys.argv[1],
+    "img": []
 }
 
 # Types de balises
@@ -101,6 +106,10 @@ global inputfile, outputfile, recNum, oflcorrection, truensync, dlen, isT2, glob
 if len(sys.argv) != 3:
     print("USAGE: python3 main.py data/pt3/SRV_2.pt3 ./data/json/SRV_2.json")
     exit(0)
+
+
+# Declanchage du compteur de temps écoulé
+t.tic()
 
 # Lecture du 2eme argument (r : lecture - b : format binaire)
 inputfile = open(sys.argv[1], "rb")
@@ -199,16 +208,16 @@ def gotMarker(timeTag, markers):
     outputfile.write("%u MAR %2x   %u\n" % (recNum, markers, timeTag))
 
 
-def gotPhoton(timeTag, channel, dtime, pixel):
+def gotPhoton(timeTag, channel, dtime, px):
     global outputfile, recNum
 
     outputfile.write("%u CHN %1x     %u     %8.0lf     %10u      %d\n" % (recNum, channel,
-                                                                          timeTag, (timeTag * globRes * 1e9), dtime, pixel))
+                                                                          timeTag, (timeTag * globRes * 1e9), dtime, px))
 
 
 def readPT3():
     global inputfile, outputfile, recNum, oflcorrection, dlen, numRecords, debutlignetime
-    global photon, ligne, pixel, Data, images
+    global pt, lg, px, Data, img
     debutimg = False
     debutligne = False
     oflcount = 0
@@ -254,13 +263,13 @@ def readPT3():
 
                 if dtime == 2:
                     debutligne = False
-                    ligne["numeroligne"] = numligne
-                    images["ligne"].append(copy.copy(ligne))
-                    ligne["pixel"] = []
+                    lg["nlg"] = numligne
+                    img["lg"].append(copy.copy(lg))
+                    lg["px"] = []
                     if numligne == 32:
-                        images["numero_image"] = numimg
-                        Data["image"].append(copy.copy(images))
-                        images["ligne"] = []
+                        img["nimg"] = numimg
+                        Data["img"].append(copy.copy(img))
+                        img["lg"] = []
 
         else:
             if debutligne:
@@ -269,22 +278,21 @@ def readPT3():
                 while(truensync > (debutlignetime + (numpixel)*TPP)):
                     # ecriture du pixel dans la ligne et changement de pixel
                     numpixel += 1
-                    ligne["pixel"].append(copy.copy(pixel))
-                    pixel["pixel"] = numpixel
-                    pixel["photon"] = []
+                    lg["px"].append(copy.copy(px))
+                    px["px"] = numpixel
+                    px["pt"] = []
 
                 # gotPhoton(truensync, channel, dtime,numpixel)
                 # ecriture du photon dans le pixel
-                photon["dtime"] = dtime
-                photon["nsync"] = truensync
-                photon["truetime"] = (truensync * globRes * 1e9)
-                pixel["photon"].append(copy.copy(photon))
-                photon.clear
+                pt["dtime"] = dtime
+                pt["nsync"] = truensync
+                px["pt"].append(copy.copy(pt))
+                pt.clear
 
                 dlen += 1
         if recNum % 100000 == 0:
-            sys.stdout.write("\r{}La progression: %.1f%%{}".format(color.GREEN, color.END) %
-                             (float(recNum)*100/float(numRecords)))
+            sys.stdout.write("\r{}La progression: %.1f%% -- %.5f seconds{}".format(color.GREEN, color.END) %
+                             (float(recNum)*100/float(numRecords), t.tocvalue()))
             sys.stdout.flush()
 
 
@@ -294,8 +302,10 @@ dlen = 0
 print("PicoHarp T3 data")
 
 readPT3()
-print("\nDebut du remplissage fichier...\n")
+t.toc('\nLe temps de replissage de la bibliotheque est de', restart=True)
+print("\nDebut du remplissage fichier...")
 json.dump(Data, outputfile)
+t.toc('Temps d\'ecriture en json est de')
 
 inputfile.close()
 outputfile.close()

@@ -73,14 +73,14 @@ lg = {
 
 # Stockage des images
 img = {
-    "nimg": 1,
-    "lg": []
+    'nimg': 1,
+    'lg': []
 }
 
 # Stockage des toutes les données
 Data = {
-    "file": sys.argv[1],
-    "img": []
+    'file': "",
+    'img': []
 }
 
 # Types de balises
@@ -226,6 +226,8 @@ def readPT3():
     numligne = 0
     numimg = 0
     i = 0
+    Data["file"] = sys.argv[1]
+
     for recNum in range(0, numRecords):
         # The data is stored in 32 bits that need to be divided into smaller
         # groups of bits, with each group of bits representing a different
@@ -304,8 +306,11 @@ print("PicoHarp T3 data")
 readPT3()
 t.toc('\nLe temps de replissage de la bibliotheque est de', restart=True)
 print("\nDebut du remplissage fichier...")
-json.dump(Data, outputfile)
+# json.dump(Data, outputfile)
 t.toc('Temps d\'ecriture en json est de')
+
+# nettoyage du tableau
+# Data.clear
 
 inputfile.close()
 outputfile.close()

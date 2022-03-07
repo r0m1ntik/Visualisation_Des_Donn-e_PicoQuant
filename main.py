@@ -62,7 +62,7 @@ pt = {
 # Stockage des pixels de chaque lignes
 px = {
     'px': 0,
-    'ph': []
+    'pt': []
 }
 
 # Stockage des lignes de chaque images

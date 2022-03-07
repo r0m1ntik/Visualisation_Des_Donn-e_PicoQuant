@@ -2,6 +2,16 @@ from PIL import Image
 from tqdm import tqdm
 from main import Data
 
+# couleur RGB - preparation pour la generation
+# 15+   photons - 253, 254, 254
+# 11-13 photons - 208, 211, 212
+# 9-10  photons - 151, 154, 154
+# 7-8   photons - 123, 125, 125
+# 5-6   photons - 98, 101, 103
+# 3-4   photons - 77, 86, 86
+# 1-2   photons - 66, 73, 73
+# 0     photon  - 23, 32, 42
+
 
 class img:
     def newImg(w, h):

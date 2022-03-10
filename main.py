@@ -18,6 +18,7 @@ import sys
 import struct
 import io
 import sys
+import getopt
 import json
 import copy
 
@@ -99,17 +100,38 @@ tyBinaryBlob = struct.unpack(">i", bytes.fromhex("FFFFFFFF"))[0]
 # Types de record
 rtPicoHarpT3 = struct.unpack(">i", bytes.fromhex('00010303'))[0]
 
-# Variables global
-global inputfile, outputfile, recNum, oflcorrection, truensync, dlen, isT2, globRes, numRecords, TPP, debutlignetime
-
-# Si le nombre d'argument est différent de 3 (on affiche l'erreur et on arrete le programme)
-if len(sys.argv) != 3:
-    print("USAGE: python3 main.py data/pt3/SRV_2.pt3 ./data/json/SRV_2.json")
-    exit(0)
-
-
 # Declanchage du compteur de temps écoulé
 t.tic()
+
+# Variables global
+global recNum, inputfile, outputfile, oflcorrection, truensync, dlen, isT2, globRes, numRecords, TPP, debutlignetime, indentation, createjson
+
+if __name__ == "__main__":
+    argv = sys.argv[0:]
+    if len(sys.argv) < 3:
+        print("USAGE: python3 main.py -i data/pt3/SRV_2.pt3 -o ./data/json/SRV_2.json")
+        exit(0)
+    try:
+        opts, args = getopt.getopt(argv, "hij")
+    except getopt.GetoptError:
+        print(f'{sys.argv[0]} -i <inputfile> -o <outputfile>')
+        sys.exit(2)
+
+    for opt, arg in opts:
+        print("fgchgvjhklml")
+        if opt in ("-h", "--help"):
+            print('test.py -i <inputfile> -o <outputfile>')
+            sys.exit(2)
+        elif opt in ("-j", "--json"):
+            print('test.py -i <inputfile> -o <outputfile>')
+            createjson = arg
+        elif opt in ("-i", "--indent"):
+            indentation = True
+
+# creation de json enable par defaut
+createjson = True
+# indentation disable par defaut
+indentation = False
 
 # Lecture du 2eme argument (r : lecture - b : format binaire)
 inputfile = open(sys.argv[1], "rb")
@@ -187,7 +209,9 @@ print("Record : ", Record)
 unuse = struct.unpack("<i", inputfile.read(4))[0]
 # inputfile.read(unuse*4)
 inputfile.read(32)
-TPP = struct.unpack("<i", inputfile.read(4))[0] / 1e6
+# TPP = struct.unpack("<i", inputfile.read(4))[0] / 1e6
+# TPP = 1004
+TPP = 982.33
 inputfile.read(108)
 
 # get important variables from headers
@@ -196,23 +220,6 @@ globRes = Resol
 
 print("Écriture de {}%d{} enregistrements, cela peut prendre un certain temps...".format(
     color.RED_HL, color.END) % numRecords)
-
-
-def gotOverflow(count):
-    global outputfile, recNum
-    outputfile.write("%u OFL *   %2x\n" % (recNum, count))
-
-
-def gotMarker(timeTag, markers):
-    global outputfile, recNum
-    outputfile.write("%u MAR %2x   %u\n" % (recNum, markers, timeTag))
-
-
-def gotPhoton(timeTag, channel, dtime, px):
-    global outputfile, recNum
-
-    outputfile.write("%u CHN %1x     %u     %8.0lf     %10u      %d\n" % (recNum, channel,
-                                                                          timeTag, (timeTag * globRes * 1e9), dtime, px))
 
 
 def readPT3():
@@ -251,7 +258,6 @@ def readPT3():
             if dtime == 0:  # Not a marker, so overflow
                 oflcount += 1
             else:
-                # gotMarker(truensync, dtime)
                 if dtime == 4:
                     numimg += 1
                     debutligne = 0
@@ -284,7 +290,6 @@ def readPT3():
                     px["px"] = numpixel
                     px["pt"] = []
 
-                # gotPhoton(truensync, channel, dtime,numpixel)
                 # ecriture du photon dans le pixel
                 pt["dtime"] = dtime
                 pt["nsync"] = truensync
@@ -300,14 +305,18 @@ def readPT3():
 
 oflcorrection = 0
 dlen = 0
-
 print("PicoHarp T3 data")
-
 readPT3()
-t.toc('\nLe temps de replissage de la bibliotheque est de', restart=True)
-print("\nDebut du remplissage fichier...")
-# json.dump(Data, outputfile)
-t.toc('Temps d\'ecriture en json est de')
+t.toc('\nLe temps de replissage de la bibliotheque est de', restart=createjson)
+
+# Generation du fichier json
+if (createjson):
+    print("\nDebut du remplissage fichier...")
+    if (indentation):
+        json.dump(Data, outputfile, indent=4)
+    else:
+        json.dump(Data, outputfile)
+    t.toc('Temps d\'ecriture en json est de')
 
 # nettoyage du tableau
 # Data.clear

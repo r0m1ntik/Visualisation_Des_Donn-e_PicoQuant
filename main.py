@@ -91,8 +91,8 @@ t.tic()
 # Variables global
 global recNum, inputfile, outputfile, globRes, numRecords,  debutlignetime, X,Y
 
-def lectureentete():
-    global inputfile, outputfile, recNum, numRecords, debutlignetime,X,Y
+def lectureentete(inputfile):
+    global  outputfile, recNum, numRecords, debutlignetime,X,Y
     
     # Vérifiez si le fichier d'entrée est un fichier PTU valide
     # Les chaînes Python n'ont pas de caractères NULL de fin, elles sont donc supprimées
@@ -176,8 +176,8 @@ def lectureentete():
         color.RED_HL, color.END) % numRecords)
 
 
-def readPT3():
-    global inputfile, outputfile, recNum, numRecords, debutlignetime,name,X,Y
+def readPT3(inputfile):
+    global  outputfile, recNum, numRecords, debutlignetime,name,X,Y
     global pt, lg, px, Data, img
     debutligne = False
     oflcount = 0
@@ -187,7 +187,6 @@ def readPT3():
     numimg = 0
     i = 0
     TABPHOTON =[]
-    Data["file"] = name
     Data["X"] = X
     Data["Y"] = Y
 
@@ -231,6 +230,7 @@ def readPT3():
                     px["pt"] = []
                     for i in range (X):
                         numpixel += 1
+                        px["pt"]=[]
                         lg["px"].append(copy.copy(px))
                         px["px"] = numpixel
                     #print(numimg)
@@ -239,9 +239,11 @@ def readPT3():
                         npx = floor( (i["nsync"]-debutlignetime) /intervale)
                         if npx>=X : # il arrive parfois que la valeur nsync = truesync de fin de ligne
                             npx=X-1
-                        lg["px"][npx]["pt"].append(copy.copy(i))
-                    TABPHOTON=[]
+                        pt["dtime"]=i["dtime"]
+                        pt["nsync"]=i["nsync"]
+                        lg["px"][npx]["pt"].append(copy.copy(pt))
 
+                    TABPHOTON=[]
                     lg["nlg"] = numligne
                     img["lg"].append(copy.copy(lg))
                     lg["px"] = []
@@ -269,21 +271,22 @@ def readPT3():
 
 
 
-def main(indentation = False):
-    global inputfile, outputfile, recNum, numRecords, debutlignetime
+def main(inputfile,outputfile=None,indentation = False,name="pt3"):
+    global  recNum, numRecords, debutlignetime
 
     # Lecture du 2eme argument (r : lecture - b : format binaire)
     inputfile = open(inputfile, "rb")
+
     print("PicoHarp T3 data")
 
 
-    lectureentete()
-    readPT3()
+    Data["file"] = name
+    lectureentete(inputfile)
+    readPT3(inputfile)
 
     inputfile.close()
 
-
-t.toc('\nLe temps de replissage de la bibliotheque est de', restart=createjson)
+    t.toc('\nLe temps de replissage de la bibliotheque est de', restart=(outputfile!=None))
 
     # Generation du fichier json
     if (outputfile != None):
@@ -299,31 +302,33 @@ t.toc('\nLe temps de replissage de la bibliotheque est de', restart=createjson)
     
 
 if __name__ == "__main__":
-    global name
     name = sys.argv[0]
     argv = sys.argv[1:]
     inputfile = None
     outputfile = None
     Indentation = False
+
     try:
         opts, args = getopt.getopt(argv, "hi:o:")
     except getopt.GetoptError:
         print(f'{sys.argv[0]} -i <inputfile> -o <outputfile>')
         sys.exit(2)
+
     for opt, arg in opts:
 
         if opt in ("-h", "--help"):
             print('test.py -i <inputfile> -o <outputfile>')
             sys.exit(2)
         elif opt in ("-i", "--input"):
-            print('test.py -i <inputfile> -o <outputfile>')
             inputfile = arg
         elif opt in ("-o", "--output"):
             outputfile = arg
         elif opt in ("-I", "--indent"):
             Indentation = True
+
     if (inputfile == None):
             print('test.py -i <inputfile> -o <outputfile>')
             sys.exit(2)
-    main(Indentation)
+
+    main(inputfile,outputfile,Indentation,name)
 

@@ -4,6 +4,8 @@ from math import *
 from tqdm import tqdm
 from main import Data, color
 import numpy as np
+import itertools
+import statistics
 
 # couleur RGB - preparation pour la generation
 COLOR = [
@@ -16,41 +18,41 @@ COLOR = [
     [206, 212, 218],  # 11-12 photons
     [222, 226, 230],  # 13-14 photons
     [233, 236, 239],  # 15+   photons
-    [241, 243, 245],  # 20+   photons rouge
-    [248, 249, 250]   # 30+   photons vert
+
 ]
 
 # creation et initialisation d'un tableau de pixel pour notre image
-column, row = 256, 32
-global TAB_PIXEL
+global TAB_PIXEL,Data
 
 
 class img:
+    global Data
     def newImg(column, row):
         global TAB_PIXEL
+        k=itertools.chain.from_iterable(TAB_PIXEL)
+        v= statistics.median(k) /2
+
         img = Image.new('RGB', size=(column, row))
         for i in range(row):
             for j in range(column):
-                color = ceil(TAB_PIXEL[i][j] / 2)
+                color = ceil(TAB_PIXEL[i][j] / v)
                 if color >= 8:
-                    if color <= 15:
-                        if color <= 10:
-                            color = 8
-                        else:
-                            color = 9
-                    else:
-                        color = 10
-
+                    color = 8
                 img.putpixel(
                     (j, i), (COLOR[color][0], COLOR[color][1], COLOR[color][2]))
         return img
 
     ##################################################################################################
-    def getData(min=0, max=len(Data["img"])):
+    def getData(min=0, max= None ):
+        if max== None:
+            max=min+5
+
+        column, row = Data["X"] , Data["Y"]
+
         # si valeur max depasse le nombre d'image
         if (max > len(Data["img"]) or min > len(Data["img"])):
             print(
-                f"{color.RED_HL}[!] Erreur, il y a au maximum {len(Data['img'])} image(s){color.END}")
+                f"{Dumppt3.color.RED_HL}[!] Erreur, il y a au maximum {len(Data['img'])} image(s){Dumppt3.color.END}")
             exit(2)
         print("\nDebut de chargement de l'image...\n")
         global TAB_PIXEL
@@ -85,7 +87,51 @@ class img:
         ##################################################################################################
 
 
-# lancement du programme
-img.getData(140, 150)
-img.getData(190, 200)
-img.getData(250, 260)
+def main(tab):
+    for i in tab:
+        img.getData(i[0],i[1])
+
+
+
+if __name__ == "__main__":
+    name = sys.argv[0]
+    argv = sys.argv[1:]
+    inputfile = None
+    outputfile = None
+    Indentation = False
+    inputjson = None
+
+    try:
+        opts, args = getopt.getopt(argv, "hi:o:j:Ia:")
+    except getopt.GetoptError:
+        print(f'{sys.argv[0]} -i <inputfile.pt3>|-j <inputfile.json> -o <outputfile> -a <[[min,max],...]>')
+        sys.exit(2)
+    for opt, arg in opts:
+
+        if opt in ("-h", "--help"):
+            print('test.py -i <inputfile> -o <outputfile>')
+            sys.exit(2)
+        elif opt in ("-i", "--input"):
+            inputfile = arg
+        elif opt in ("-o", "--output"):
+            outputfile = arg
+        elif opt in ("-I", "--indent"):
+            Indentation = True
+        elif opt in ("-j", "--json"):
+            inputjson = arg
+        elif opt in ("-a","-affichage"):
+            tabimg=eval(arg)
+            
+    if (inputfile == None and inputjson == None):
+            print('test.py -i <inputfile.pt3>|-j <inputfile.json>')
+            sys.exit(2)
+    
+    if inputfile != None :
+        Dumppt3.main(inputfile,outputfile,Indentation,name)
+        Data = Dumppt3.Data
+
+    if inputjson != None :
+        f= open(inputjson)
+        Data = json.load(f)
+
+    main(tabimg)

@@ -10,7 +10,7 @@ python3 img.py -i data/pt3/SRV_2.pt3 -a [[10,15],[100,105]]
 ## Arguments de commande
 
 | Options | Options Long | Significtion | Obligatoire |
-| ------ | ------ |
+| ------ | ------ |------ | ------ |
 | -h | --help | Affiche de l'aide | Non |
 | -i | --ifile | Fichier de lecture .pt3 | Oui |
 | -o | --ofile | Fichier json qui sera crée | Oui |

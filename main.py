@@ -89,7 +89,7 @@ Data = {
 t.tic()
 
 # Variables global
-global recNum, inputfile, outputfile, globRes, numRecords,  debutlignetime, X,Y
+global recNum, inputfile, outputfile, numRecords,  debutlignetime, X,Y
 
 def lectureentete(inputfile):
     global  outputfile, recNum, numRecords, debutlignetime,X,Y
@@ -170,7 +170,7 @@ def lectureentete(inputfile):
 
     # get important variables from headers
     numRecords = Record
-    globRes = Resol
+
 
     print("Écriture de {}%d{} enregistrements, cela peut prendre un certain temps...".format(
         color.RED_HL, color.END) % numRecords)

@@ -3,7 +3,8 @@
 ## Lancement du programme
 
 ```sh
-python3 main.py data/pt3/SRV_2.pt3 ./data/json/SRV_2.json
+python3 main.py -i data/pt3/SRV_2.pt3 -o ./data/json/SRV_2.json
+python3 img.py -i data/pt3/SRV_2.pt3 -a [[10,15],[100,105]]
 ```
 
 ## Arguments de commande

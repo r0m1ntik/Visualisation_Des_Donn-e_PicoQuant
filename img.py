@@ -1,8 +1,11 @@
 from email.policy import default
+import sys
+import getopt
+import json
 from PIL import Image
 from math import *
 from tqdm import tqdm
-from main import Data, color
+import main as Dumppt3
 import numpy as np
 import itertools
 import statistics

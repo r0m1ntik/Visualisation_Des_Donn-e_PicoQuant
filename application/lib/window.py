@@ -2,8 +2,9 @@
 from config import *
 from lib.toolstip import *
 from tkinter import filedialog as fd
-from tkinter.messagebox import showinfo, askyesno
+from tkinter.messagebox import showinfo, askquestion, askyesno
 from tkinter import Button, PhotoImage
+import time
 
 
 class MyWindow(Tk):
@@ -52,7 +53,7 @@ class MyWindow(Tk):
         menu_file.add_command(label="Quitter",
                               underline=0,
                               accelerator="CTRL+Q",
-                              command=lambda: self.do_quit())
+                              command=self.do_quit)
         self.bind_all("<Control-q>", lambda x: self.do_quit())
 
         menu_bar.add_cascade(label="Fichier", menu=menu_file)
@@ -84,17 +85,17 @@ class MyWindow(Tk):
         )
 
     def do_something(self):
-        print("Menu clicked: save")
+        print(f"Menu clicked")
 
     def do_quit(self):
-        response = askyesno(
-            "Quitter",
-            "Voulais vous quitter l'application ?\nPenser a sauvegarder le fichier !"
-        )
-        QUITTER = True
+        res = askyesno(
+            'Quitter', "Voulais vous quitter l'application ?\nPenser a sauvegarder le fichier !")
+        if res == True:
+            Tk.quit(self)
 
     def do_about(self):
-        showinfo("My title", "My message")
+        showinfo("A propos",
+                 f"{AppName}\nVersion: {AppVersion}{AppDev}{AppGit}")
 
     def do_create_botton(self):
         ######################### BOTTON 1 ########################

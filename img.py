@@ -25,15 +25,16 @@ COLOR = [
 ]
 
 # creation et initialisation d'un tableau de pixel pour notre image
-global TAB_PIXEL,Data
+global TAB_PIXEL, Data
 
 
 class img:
     global Data
+
     def newImg(column, row):
         global TAB_PIXEL
-        k=itertools.chain.from_iterable(TAB_PIXEL)
-        v= statistics.median(k) /2
+        k = itertools.chain.from_iterable(TAB_PIXEL)
+        v = statistics.median(k) / 2
 
         img = Image.new('RGB', size=(column, row))
         for i in range(row):
@@ -46,11 +47,11 @@ class img:
         return img
 
     ##################################################################################################
-    def getData(min=0, max= None ):
-        if max== None:
-            max=min+5
+    def getData(min=0, max=None):
+        if max == None:
+            max = min+5
 
-        column, row = Data["X"] , Data["Y"]
+        column, row = Data["X"], Data["Y"]
 
         # si valeur max depasse le nombre d'image
         if (max > len(Data["img"]) or min > len(Data["img"])):
@@ -92,8 +93,7 @@ class img:
 
 def main(tab):
     for i in tab:
-        img.getData(i[0],i[1])
-
+        img.getData(i[0], i[1])
 
 
 if __name__ == "__main__":
@@ -107,12 +107,14 @@ if __name__ == "__main__":
     try:
         opts, args = getopt.getopt(argv, "hi:o:j:Ia:")
     except getopt.GetoptError:
-        print(f'{sys.argv[0]} -i <inputfile.pt3>|-j <inputfile.json> -o <outputfile> -a <[[min,max],...]>')
+        print(
+            f'{sys.argv[0]} -i <inputfile.pt3>|-j <inputfile.json> -o <outputfile> -a <[[min,max],...]>')
         sys.exit(2)
     for opt, arg in opts:
 
         if opt in ("-h", "--help"):
-            print('test.py -i <inputfile> -o <outputfile>')
+            print('{}Pour lancer le programme:{}\n'
+                  f'{sys.argv[0]} -i <inputfile.pt3> -j <inputfile.json> -o <outputfile> -a <[[min,max],...]>'.format(Dumppt3.color.RED_HL, Dumppt3.color.END))
             sys.exit(2)
         elif opt in ("-i", "--input"):
             inputfile = arg
@@ -122,19 +124,19 @@ if __name__ == "__main__":
             Indentation = True
         elif opt in ("-j", "--json"):
             inputjson = arg
-        elif opt in ("-a","-affichage"):
-            tabimg=eval(arg)
-            
+        elif opt in ("-a", "-affichage"):
+            tabimg = eval(arg)
+
     if (inputfile == None and inputjson == None):
-            print('test.py -i <inputfile.pt3>|-j <inputfile.json>')
-            sys.exit(2)
-    
-    if inputfile != None :
-        Dumppt3.main(inputfile,outputfile,Indentation,name)
+        print('test.py -i <inputfile.pt3>|-j <inputfile.json>')
+        sys.exit(2)
+
+    if inputfile != None:
+        Dumppt3.main(inputfile, outputfile, Indentation, name)
         Data = Dumppt3.Data
 
-    if inputjson != None :
-        f= open(inputjson)
+    if inputjson != None:
+        f = open(inputjson)
         Data = json.load(f)
 
     main(tabimg)

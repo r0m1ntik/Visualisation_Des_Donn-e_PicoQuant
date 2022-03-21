@@ -89,11 +89,12 @@ Data = {
 t.tic()
 
 # Variables global
-global recNum, inputfile, outputfile, numRecords,  debutlignetime, X,Y
+global recNum, inputfile, outputfile, numRecords,  debutlignetime, X, Y
+
 
 def lectureentete(inputfile):
-    global  outputfile, recNum, numRecords, debutlignetime,X,Y
-    
+    global outputfile, recNum, numRecords, debutlignetime, X, Y
+
     # Vérifiez si le fichier d'entrée est un fichier PTU valide
     # Les chaînes Python n'ont pas de caractères NULL de fin, elles sont donc supprimées
     Ident = inputfile.read(16).decode("utf-8").strip('\0')
@@ -114,7 +115,7 @@ def lectureentete(inputfile):
 
     # Affichage des données récuperées
     print("Version: " + version + "\nCreateur: " +
-        CreatorName + "\nVersion: " + Creatorversion + "\nDate|Heure: " + fileTime + "\nSaut de ligne: " + linefeed + "\nCommentaire: " + Comment)
+          CreatorName + "\nVersion: " + Creatorversion + "\nDate|Heure: " + fileTime + "\nSaut de ligne: " + linefeed + "\nCommentaire: " + Comment)
 
     NoC, BpR, RoutChan, NboBoards, ActCu = struct.unpack(
         "iiiii", inputfile.read(20))
@@ -163,21 +164,20 @@ def lectureentete(inputfile):
     unuse = struct.unpack("<i", inputfile.read(4))[0]
     # inputfile.read(unuse*4)
     inputfile.read(24)
-    X=struct.unpack("<i", inputfile.read(4))[0]
-    Y=struct.unpack("<i", inputfile.read(4))[0]
-    print(" x: %d  \n y: %d" %(X,Y))
+    X = struct.unpack("<i", inputfile.read(4))[0]
+    Y = struct.unpack("<i", inputfile.read(4))[0]
+    print(" x: %d  \n y: %d" % (X, Y))
     inputfile.read(108)
 
     # get important variables from headers
     numRecords = Record
-
 
     print("Écriture de {}%d{} enregistrements, cela peut prendre un certain temps...".format(
         color.RED_HL, color.END) % numRecords)
 
 
 def readPT3(inputfile):
-    global  outputfile, recNum, numRecords, debutlignetime,name,X,Y
+    global outputfile, recNum, numRecords, debutlignetime, name, X, Y
     global pt, lg, px, Data, img
     debutligne = False
     oflcount = 0
@@ -186,7 +186,7 @@ def readPT3(inputfile):
     numligne = 0
     numimg = 0
     i = 0
-    TABPHOTON =[]
+    TABPHOTON = []
     Data["X"] = X
     Data["Y"] = Y
 
@@ -228,22 +228,22 @@ def readPT3(inputfile):
                     debutligne = False
                     intervale = (truensync - debutlignetime) / X
                     px["pt"] = []
-                    for i in range (X):
+                    for i in range(X):
                         numpixel += 1
-                        px["pt"]=[]
+                        px["pt"] = []
                         lg["px"].append(copy.copy(px))
                         px["px"] = numpixel
-                    #print(numimg)
-                    #print(numligne)
+                    # print(numimg)
+                    # print(numligne)
                     for i in TABPHOTON:
-                        npx = floor( (i["nsync"]-debutlignetime) /intervale)
-                        if npx>=X : # il arrive parfois que la valeur nsync = truesync de fin de ligne
-                            npx=X-1
-                        pt["dtime"]=i["dtime"]
-                        pt["nsync"]=i["nsync"]
+                        npx = floor((i["nsync"]-debutlignetime) / intervale)
+                        if npx >= X:  # il arrive parfois que la valeur nsync = truesync de fin de ligne
+                            npx = X-1
+                        pt["dtime"] = i["dtime"]
+                        pt["nsync"] = i["nsync"]
                         lg["px"][npx]["pt"].append(copy.copy(pt))
 
-                    TABPHOTON=[]
+                    TABPHOTON = []
                     lg["nlg"] = numligne
                     img["lg"].append(copy.copy(lg))
                     lg["px"] = []
@@ -255,14 +255,12 @@ def readPT3(inputfile):
         else:
             if debutligne:
                 if channel == 0 or channel > 4:  # Should not occur
-                    print("Illegal Channel: # %1u" % ( channel))
+                    print("Illegal Channel: # %1u" % (channel))
                 # stockage du photon
                 pt["dtime"] = dtime
                 pt["nsync"] = truensync
                 TABPHOTON.append(copy.copy(pt))
                 pt.clear
-
-
 
         if recNum % 100000 == 0:
             sys.stdout.write("\r{}La progression: %.1f%% -- %.5f seconds{}".format(color.GREEN, color.END) %
@@ -270,15 +268,13 @@ def readPT3(inputfile):
             sys.stdout.flush()
 
 
-
-def main(inputfile,outputfile=None,indentation = False,name="pt3"):
-    global  recNum, numRecords, debutlignetime
+def main(inputfile, outputfile=None, indentation=False, name="pt3"):
+    global recNum, numRecords, debutlignetime
 
     # Lecture du 2eme argument (r : lecture - b : format binaire)
     inputfile = open(inputfile, "rb")
 
     print("PicoHarp T3 data")
-
 
     Data["file"] = name
     lectureentete(inputfile)
@@ -286,7 +282,8 @@ def main(inputfile,outputfile=None,indentation = False,name="pt3"):
 
     inputfile.close()
 
-    t.toc('\nLe temps de replissage de la bibliotheque est de', restart=(outputfile!=None))
+    t.toc('\nLe temps de replissage de la bibliotheque est de',
+          restart=(outputfile != None))
 
     # Generation du fichier json
     if (outputfile != None):
@@ -299,7 +296,6 @@ def main(inputfile,outputfile=None,indentation = False,name="pt3"):
         outputfile.close()
         t.toc('Temps d\'ecriture en json est de')
 
-    
 
 if __name__ == "__main__":
     name = sys.argv[0]
@@ -311,13 +307,15 @@ if __name__ == "__main__":
     try:
         opts, args = getopt.getopt(argv, "hi:o:")
     except getopt.GetoptError:
-        print(f'{sys.argv[0]} -i <inputfile> -o <outputfile>')
+        print(f'{color.RED_HL}Erreur lors de la recuperation des arguments{color.END}\n'
+              f'{sys.argv[0]} -i <inputfile.pt3> -j <inputfile.json> -o <outputfile>')
         sys.exit(2)
 
     for opt, arg in opts:
 
         if opt in ("-h", "--help"):
-            print('test.py -i <inputfile> -o <outputfile>')
+            print(f'{color.RED_HL}Pour lancer le programme:\n'
+                  f'{sys.argv[0]} -i <inputfile.pt3> -j <inputfile.json> -o <outputfile>>{color.END}')
             sys.exit(2)
         elif opt in ("-i", "--input"):
             inputfile = arg
@@ -327,8 +325,8 @@ if __name__ == "__main__":
             Indentation = True
 
     if (inputfile == None):
-            print('test.py -i <inputfile> -o <outputfile>')
-            sys.exit(2)
+        print(f'Champ obligatoire incorrect\n'
+              f'{sys.argv[0]} {color.RED_HL}[-i <inputfile.pt3> ou -j <inputfile.json>]{color.END} -o <outputfile> -I')
+        sys.exit(2)
 
-    main(inputfile,outputfile,Indentation,name)
-
+    main(inputfile, outputfile, Indentation, name)

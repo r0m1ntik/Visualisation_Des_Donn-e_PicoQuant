@@ -20,4 +20,4 @@ AppDev = ("Réalisé par:\n"
 AppGit = "https://git.univ-pau.fr/rbadanin/visualisation_des_donnee_picoquant"
 
 
-QUITTER = False
+SelectedFile = ""

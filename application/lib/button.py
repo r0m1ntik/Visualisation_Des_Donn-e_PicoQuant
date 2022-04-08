@@ -6,16 +6,29 @@ from config import relative_to_assets, OUTPUT_PATH, SelectedFile
 
 class MyButton():
 
-    # Varible de zoom (current X1)
-    global current_zoom, current_img
-    current_zoom = 1
-    current_img = "test.png"
-
     def __init__(self):
         Tk.__init__(self)
         self.do_create_botton(self)
 
     def do_create_botton(self, canvasG, canvas1, canvas2, canvas3):
+        # Varible de zoom (current X1)
+        global current_zoom, current_img, canva2_x, canva2_y, canva2_img, canva2_cercle, max_x, max_y, img_pos_x, img_pos_y
+        global old_x, old_y, oldx, oldy
+        current_zoom = 1
+        current_img = "test.png"
+        canva2_img = 0
+        canva2_cercle = 0
+        # pour le cercle
+        max_x = 50
+        max_y = 50
+
+        # position de l'image
+        img_pos_x = 0
+        img_pos_y = 0
+
+        canva2_x = int(canvas2['width'])/2,
+        canva2_y = int(canvas2['height'])/2,
+
         ######################### BOTTON 1 ########################
         self.button_image_1 = PhotoImage(
             file=relative_to_assets("button_1.png"))
@@ -80,7 +93,9 @@ class MyButton():
             image=self.button_image_4,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: CustomFunction.open_file(self, dir=OUTPUT_PATH),
+            # command=lambda: CustomFunction.open_file(self, dir=OUTPUT_PATH),
+            command=lambda: creeCercle(
+                canva2_x[0]-max_x, canva2_y[0]-max_x, max_x, max_y),
             relief="flat"
         )
         self.button_4.place(
@@ -123,17 +138,50 @@ class MyButton():
             #     file=relative_to_assets(img))
 
             # Disposition de l'image dans le canvas2
-            canvas2.create_image(
-                int(canvas2['width'])/2,
-                int(canvas2['height'])/2,
+            canva2_img = canvas2.create_image(
+                canva2_x[0],
+                canva2_y[0],
                 image=self.loading,
             )
 
             canvas2.bind("<MouseWheel>", do_zoom)
+            canvas2.bind('<ButtonPress-2>',
+                         lambda event: move_cercle(event.x, event.y))
             canvas2.bind('<ButtonPress-1>',
                          lambda event: canvas2.scan_mark(event.x, event.y))
             canvas2.bind("<B1-Motion>",
-                         lambda event: canvas2.scan_dragto(event.x, event.y, gain=1))
+                         lambda event: movement(event.x, event.y))
+
+        def movement(x, y):
+            global img_pos_x, img_pos_y
+            canvas2.scan_dragto(x, y, gain=1)
+            img_pos_x = x
+            img_pos_y = y
+            print(f'movement: {x} {y}')
+
+        def move_cercle(x, y, update=False):
+            global canva2_cercle, canva2_img, old_x, old_y
+            if (update):
+                if (not canva2_cercle):
+                    print("Cercle created")
+                    creeCercle(x-max_x, y-max_y, x+max_x, y+max_y)
+                    return
+                else:
+                    # supprimer l'element cercle de canvas2
+                    canvas2.delete(canva2_cercle)
+                    # on crée le cercle
+                    # canvas2.move(canva2_cercle, x-max_x, y-max_y)
+                    creeCercle(x-max_x, y-max_y, x+max_x, y+max_y)
+            else:
+                # supprimer l'element cercle de canvas2
+                canvas2.delete(canva2_cercle)
+                # on crée le cercle
+                # canvas2.move(canva2_cercle, x-max_x, y-max_y)
+                creeCercle(x-max_x, y-max_y, x+max_x, y+max_y)
+                # affiche le coordonnée
+                print(x, y)
+                old_x = x
+                old_y = y
 
         def do_zoom(event):
             global current_zoom
@@ -150,7 +198,8 @@ class MyButton():
                 current_zoom = 5
 
         def zoom(current):
-            global current_img, current_zoom
+            global current_img, current_zoom, canvas2_img, max_x, max_y, canva2_cercle
+            global old_x, old_y
             current_zoom = current
             old = Image.open(relative_to_assets(current_img))
             width, height = old.size
@@ -159,8 +208,28 @@ class MyButton():
             resized = old.resize(
                 (width, height), Image.ANTIALIAS)
             self.loading = ImageTk.PhotoImage(resized)
+
+            # supprimer l'element canva2_img de canvas2
+            canvas2.delete(canva2_img)
+            # supprimer l'element cercle de canvas2
+            # canvas2.delete(canva2_cercle)
+
             canvas2.create_image(
-                int(canvas2['width'])/2,
-                int(canvas2['height'])/2,
+                canva2_x[0],
+                canva2_y[0],
                 image=self.loading,
+            )
+
+            move_cercle(old_x, old_y, update=True)
+
+        def creeCercle(canva2_x, canva2_y, max_x, max_y):
+            global canva2_cercle
+            canva2_cercle = canvas2.create_oval(
+                canva2_x,
+                canva2_y,
+                max_x,
+                max_y,
+                width=2,
+                # fill="green",
+                outline="red"
             )

@@ -53,7 +53,8 @@ canvas1.place(x=0, y=0)
 
 ####### BLOCK DE GAUCHE #######
 frame2 = Frame(
-    canvasG, bg="#EFEFEF"
+    canvasG,
+    bg="#EFEFEF"
 )
 frame2.place(
     x=0,

@@ -10,90 +10,81 @@ import numpy as np
 import itertools
 import statistics
 
-# couleur RGB - preparation pour la generation
-COLOR = [
-    [0, 0, 0],        # 0     photon
-    [33, 37, 41],     # 1-2   photon
-    [52, 58, 64],     # 3-4   photons
-    [73, 80, 87],     # 5-6   photons
-    [134, 142, 150],  # 7-8   photons
-    [173, 181, 189],  # 9-10  photons
-    [206, 212, 218],  # 11-12 photons
-    [222, 226, 230],  # 13-14 photons
-    [233, 236, 239],  # 15+   photons
-
-]
-
 # creation et initialisation d'un tableau de pixel pour notre image
-global TAB_PIXEL, Data
+global Data
 
+def newImg(column, row,TAB_PIXEL):
+    k=itertools.chain.from_iterable(TAB_PIXEL)
+    v= max(k)
+    v= 256/v
+    
+    img = Image.new('RGB', size=(column, row))
+    for i in range(row):
+        for j in range(column):
+            color = ceil(TAB_PIXEL[i][j] * v)
+            img.putpixel(
+                (j, i), (color, color,color))
+    return img
 
-class img:
+##################################################################################################
+def getData(min=0, max=None):
     global Data
+    global TAB_PIXEL
+    if max == None:
+        max = min+5
 
-    def newImg(column, row):
-        global TAB_PIXEL
-        k = itertools.chain.from_iterable(TAB_PIXEL)
-        v = statistics.median(k) / 2
+    column, row = Data["X"], Data["Y"]
 
-        img = Image.new('RGB', size=(column, row))
-        for i in range(row):
-            for j in range(column):
-                color = ceil(TAB_PIXEL[i][j] / v)
-                if color >= 8:
-                    color = 8
-                img.putpixel(
-                    (j, i), (COLOR[color][0], COLOR[color][1], COLOR[color][2]))
-        return img
+    # si valeur max depasse le nombre d'image
+    if (max > len(Data["img"]) or min > len(Data["img"])):
+        print(
+            f"{Dumppt3.color.RED_HL}[!] Erreur, il y a au maximum {len(Data['img'])} image(s){Dumppt3.color.END}")
+        exit(2)
+    print("\nDebut de chargement de l'image...\n")
+    global TAB_PIXEL
+    TAB_PIXEL = [[0 for j in range(column)] for i in range(row)]
+    TABPHOTON = []
+    # parcour image par image
+    dataImg = Data["img"]
+    for min in tqdm(range(min, max), desc=f"Chargement des images [{min} à {max}]", ascii=False, ncols=75):
+        # parcour ligne par ligne
+        dataLigne = dataImg[min]["lg"]
+        for j in range(len(dataLigne)):
+            # parcour pixel par pixel
+            dataPixel = dataLigne[j]["px"]
+            for k in range(len(dataPixel)):
+                # init du nombre de photon
+                nb_photon = 0
+                # parcour photon par photon
+                dataPhoton = dataPixel[k]["pt"]
+                for w in range(len(dataPhoton)):
+                    # incrémentation du nombre de photon
+                    TABPHOTON.append(dataPhoton[w])
+                    nb_photon += 1
+                TAB_PIXEL[j][k] += nb_photon
+                # affichage des infos
+                # print(f'image: {min} | ligne: {j} | pixel:{k} | nombre de photon: {nb_photon}')
+
+    print("\nFin de chargement de l'image.")
 
     ##################################################################################################
-    def getData(min=0, max=None):
-        if max == None:
-            max = min+5
 
-        column, row = Data["X"], Data["Y"]
+def affichageImg(min,max):
+    
+    TAB_PIXEL,TABPHOTON,column, row = getData(min,max)
 
-        # si valeur max depasse le nombre d'image
-        if (max > len(Data["img"]) or min > len(Data["img"])):
-            print(
-                f"{Dumppt3.color.RED_HL}[!] Erreur, il y a au maximum {len(Data['img'])} image(s){Dumppt3.color.END}")
-            exit(2)
-        print("\nDebut de chargement de l'image...\n")
-        global TAB_PIXEL
-        TAB_PIXEL = [[0 for j in range(column)] for i in range(row)]
-        # parcour image par image
-        dataImg = Data["img"]
-        for min in tqdm(range(min, max), desc=f"Chargement des images [{min} à {max}]", ascii=False, ncols=75):
-            # parcour ligne par ligne
-            dataLigne = dataImg[min]["lg"]
-            for j in range(len(dataLigne)):
-                # parcour pixel par pixel
-                dataPixel = dataLigne[j]["px"]
-                for k in range(len(dataPixel)):
-                    # init du nombre de photon
-                    nb_photon = 0
-                    # parcour photon par photon
-                    dataPhoton = dataPixel[k]["pt"]
-                    for w in range(len(dataPhoton)):
-                        # incrémentation du nombre de photon
-                        nb_photon += 1
-                    TAB_PIXEL[j][k] += nb_photon
-                    # affichage des infos
-                    # print(f'image: {min} | ligne: {j} | pixel:{k} | nombre de photon: {nb_photon}')
+    print("\nDebut de traitement de l'image...")
 
-        print("\nFin de chargement de l'image.")
-        print("\nDebut de traitement de l'image...")
+    wallpaper = newImg(column, row,TAB_PIXEL)
+    wallpaper.show()
 
-        wallpaper = img.newImg(column, row)
-        wallpaper.show()
+    print("\nFin de traitement de l'image.\n")
 
-        print("\nFin de traitement de l'image.\n")
-        ##################################################################################################
 
 
 def main(tab):
     for i in tab:
-        img.getData(i[0], i[1])
+        affichageImg(i[0],i[1])
 
 
 if __name__ == "__main__":

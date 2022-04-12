@@ -84,7 +84,7 @@ def affichageImg(min, max):
     wallpaper.show()
 
     k = itertools.chain.from_iterable(TAB_PIXEL)
-    a = plt.hist(TAB_PIXEL,
+    a = plt.hist(TAB_PHOTON,
                  bins='auto')
     plt.title("Histogram")
     plt.show()

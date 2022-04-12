@@ -46,7 +46,7 @@ def getData(min=0, max=None):
     print("\nDebut de chargement de l'image...\n")
     global TAB_PIXEL
     TAB_PIXEL = [[0 for j in range(column)] for i in range(row)]
-    TABPHOTON = []
+    TAB_PHOTON = []
     # parcour image par image
     dataImg = Data["img"]
     for min in tqdm(range(min, max), desc=f"Chargement des images [{min} à {max}]", ascii=False, ncols=75):
@@ -60,23 +60,23 @@ def getData(min=0, max=None):
                 nb_photon = 0
                 # parcour photon par photon
                 dataPhoton = dataPixel[k]["pt"]
-                for w in range(len(dataPhoton)):
+                for w in dataPhoton:
                     # incrémentation du nombre de photon
-                    TABPHOTON.append(dataPhoton[w])
+                    TAB_PHOTON.append(w["dtime"])
                     nb_photon += 1
                 TAB_PIXEL[j][k] += nb_photon
                 # affichage des infos
                 # print(f'image: {min} | ligne: {j} | pixel:{k} | nombre de photon: {nb_photon}')
 
     print("\nFin de chargement de l'image.")
-    return TAB_PIXEL, TABPHOTON, column, row
+    return TAB_PIXEL, TAB_PHOTON, column, row
 
     ##################################################################################################
 
 
 def affichageImg(min, max):
 
-    TAB_PIXEL, TABPHOTON, column, row = getData(min, max)
+    TAB_PIXEL, TAB_PHOTON, column, row = getData(min, max)
 
     print("\nDebut de traitement de l'image...")
 

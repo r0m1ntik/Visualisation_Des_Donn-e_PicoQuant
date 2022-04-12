@@ -15,7 +15,7 @@ class MyButton():
         global current_zoom, current_img, canva2_x, canva2_y, canva2_img, canva2_cercle, max_x, max_y, img_pos_x, img_pos_y
         global old_x, old_y, oldx, oldy
         current_zoom = 1
-        current_img = "test.png"
+        current_img = "unknown2.png"
         canva2_img = 0
         canva2_cercle = 0
         # pour le cercle
@@ -94,8 +94,7 @@ class MyButton():
             borderwidth=0,
             highlightthickness=0,
             # command=lambda: CustomFunction.open_file(self, dir=OUTPUT_PATH),
-            command=lambda: creeCercle(
-                canva2_x[0]-max_x, canva2_y[0]-max_x, max_x, max_y),
+            command=lambda: CustomFunction.open_file(self, dir=OUTPUT_PATH),
             relief="flat"
         )
         self.button_4.place(
@@ -107,7 +106,7 @@ class MyButton():
         CreateToolTip(self.button_4, text='Ouvrir')
         ######################## FIN BOTTON 4 ########################
 
-        ######################## BOTTON 5 ########################
+        ######################## BOTTON 5 ############################
         self.button_image_5 = PhotoImage(
             file=relative_to_assets("button_5.png"))
         self.button_5 = Button(
@@ -123,7 +122,66 @@ class MyButton():
             width=374.0,
             height=197.0
         )
+
         ######################## FIN BOTTON 5 ########################
+
+        ######################## BOTTON 6 ############################
+        self.button_image_6 = PhotoImage(
+            file=relative_to_assets("button_6.png"))
+        self.button_6 = Button(
+            image=self.button_image_6,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: creeCercle(
+                canva2_x[0]-max_x, canva2_y[0]-max_x, max_x, max_y),
+            relief="flat"
+        )
+        self.button_6.place(
+            x=250.0,
+            y=0.0,
+            width=30.0,
+            height=30.0
+        )
+        CreateToolTip(self.button_6, text='Crée un cercle')
+        ######################## FIN BOTTON 6 ########################
+
+        ######################## BOTTON 7 ############################
+        self.button_image_7 = PhotoImage(
+            file=relative_to_assets("button_7.png"))
+        self.button_7 = Button(
+            image=self.button_image_7,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: print("button_7 clicked"),
+            relief="flat"
+        )
+        self.button_7.place(
+            x=285.0,
+            y=0.0,
+            width=30.0,
+            height=30.0
+        )
+        CreateToolTip(self.button_7, text='Agrandir la taille du cercle')
+        ######################## FIN BOTTON 7 ########################
+
+        ######################## BOTTON 8 ############################
+        self.button_image_8 = PhotoImage(
+            file=relative_to_assets("button_8.png"))
+        self.button_8 = Button(
+            image=self.button_image_8,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: print("button_8 clicked"),
+            relief="flat"
+        )
+        self.button_8.place(
+            x=320.0,
+            y=0.0,
+            width=30.0,
+            height=30.0
+        )
+        CreateToolTip(self.button_8, text='Reduire la taille du cercle')
+        ######################## FIN BOTTON 8 ########################
 
         def Change_Pic(self, img):
             self.button_5.destroy()
@@ -160,7 +218,8 @@ class MyButton():
             print(f'movement: {x} {y}')
 
         def move_cercle(x, y, update=False):
-            global canva2_cercle, canva2_img, old_x, old_y
+            global canva2_cercle, canva2_img, old_x, old_y, img_pos_x, img_pos_y
+            # lorsque on fait un zoom, on garge le cercle au meme endroit
             if (update):
                 if (not canva2_cercle):
                     print("Cercle created")
@@ -172,11 +231,19 @@ class MyButton():
                     # on crée le cercle
                     # canvas2.move(canva2_cercle, x-max_x, y-max_y)
                     creeCercle(x-max_x, y-max_y, x+max_x, y+max_y)
+            # sinon on le place a la bonne place et on met a jour les coordonées
             else:
                 # supprimer l'element cercle de canvas2
                 canvas2.delete(canva2_cercle)
                 # on crée le cercle
                 # canvas2.move(canva2_cercle, x-max_x, y-max_y)
+                print(
+                    f'x:{x} - y:{y} ----- img_pos_x: {img_pos_x} - img_pos_y: {img_pos_y}')
+                if (x != canva2_x[0]):
+                    # print("different")
+                    # a faire
+                    # on annule
+                    img_pos_x = 0
                 creeCercle(x-max_x, y-max_y, x+max_x, y+max_y)
                 # affiche le coordonnée
                 print(x, y)
@@ -229,7 +296,7 @@ class MyButton():
                 canva2_y,
                 max_x,
                 max_y,
-                width=2,
+                width=5,
                 # fill="green",
                 outline="red"
             )

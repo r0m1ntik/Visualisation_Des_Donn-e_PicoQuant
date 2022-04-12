@@ -34,16 +34,14 @@ class img:
     def newImg(column, row):
         global TAB_PIXEL
         k = itertools.chain.from_iterable(TAB_PIXEL)
-        v = statistics.median(k) / 2
-
+        v = max(k)
+        v = 256/v
         img = Image.new('RGB', size=(column, row))
         for i in range(row):
             for j in range(column):
-                color = ceil(TAB_PIXEL[i][j] / v)
-                if color >= 8:
-                    color = 8
+                color = ceil(TAB_PIXEL[i][j]*v)
                 img.putpixel(
-                    (j, i), (COLOR[color][0], COLOR[color][1], COLOR[color][2]))
+                    (j, i), (color, color, color))
         return img
 
     ##################################################################################################

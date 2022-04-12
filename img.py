@@ -1,4 +1,3 @@
-from email.policy import default
 import sys
 import getopt
 import json
@@ -9,6 +8,7 @@ import main as Dumppt3
 import numpy as np
 import itertools
 import statistics
+import matplotlib.pyplot as plt
 
 # creation et initialisation d'un tableau de pixel pour notre image
 global Data
@@ -69,6 +69,7 @@ def getData(min=0, max=None):
                 # print(f'image: {min} | ligne: {j} | pixel:{k} | nombre de photon: {nb_photon}')
 
     print("\nFin de chargement de l'image.")
+    return TAB_PIXEL, TABPHOTON, column, row
 
     ##################################################################################################
 
@@ -81,6 +82,12 @@ def affichageImg(min, max):
 
     wallpaper = newImg(column, row, TAB_PIXEL)
     wallpaper.show()
+
+    k = itertools.chain.from_iterable(TAB_PIXEL)
+    a = plt.hist(TAB_PIXEL,
+                 bins='auto')
+    plt.title("Histogram")
+    plt.show()
 
     print("\nFin de traitement de l'image.\n")
 
@@ -97,6 +104,7 @@ if __name__ == "__main__":
     outputfile = None
     Indentation = False
     inputjson = None
+    tabimg = None
 
     try:
         opts, args = getopt.getopt(argv, "hi:o:j:Ia:")
@@ -121,8 +129,9 @@ if __name__ == "__main__":
         elif opt in ("-a", "-affichage"):
             tabimg = eval(arg)
 
-    if (inputfile == None and inputjson == None):
-        print('test.py -i <inputfile.pt3>|-j <inputfile.json>')
+    if ((inputfile == None and inputjson == None) or tabimg == None):
+        print(
+            'test.py -i <inputfile.pt3>|-j <inputfile.json> -a <[[min,max], ...]>')
         sys.exit(2)
 
     if inputfile != None:

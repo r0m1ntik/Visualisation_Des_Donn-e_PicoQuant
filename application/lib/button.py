@@ -93,7 +93,6 @@ class MyButton():
             image=self.button_image_4,
             borderwidth=0,
             highlightthickness=0,
-            # command=lambda: CustomFunction.open_file(self, dir=OUTPUT_PATH),
             command=lambda: CustomFunction.open_file(self, dir=OUTPUT_PATH),
             relief="flat"
         )

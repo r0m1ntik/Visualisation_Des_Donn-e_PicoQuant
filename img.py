@@ -30,7 +30,7 @@ def newImg(column, row, TAB_PIXEL):
 ##################################################################################################
 
 
-def getData(min=0, max=None):
+def getData(min=0, max=None,select=[]):
     global Data
     global TAB_PIXEL
     if max == None:
@@ -60,10 +60,15 @@ def getData(min=0, max=None):
                 nb_photon = 0
                 # parcour photon par photon
                 dataPhoton = dataPixel[k]["pt"]
-                for w in dataPhoton:
-                    # incrémentation du nombre de photon
-                    TAB_PHOTON.append(w["dtime"])
-                    nb_photon += 1
+                nb_photon=len(dataPhoton)
+                if(not select):
+                    for w in dataPhoton:
+                        # incrémentation du nombre de photon
+                        TABPHOTON.append(w["dtime"])
+                elif ([k,j] in select):
+                    for w in dataPhoton:
+                        # incrémentation du nombre de photon
+                        TABPHOTON.append(w["dtime"])
                 TAB_PIXEL[j][k] += nb_photon
                 # affichage des infos
                 # print(f'image: {min} | ligne: {j} | pixel:{k} | nombre de photon: {nb_photon}')
@@ -75,8 +80,9 @@ def getData(min=0, max=None):
 
 
 def affichageImg(min, max):
-
-    TAB_PIXEL, TAB_PHOTON, column, row = getData(min, max)
+    test= [[i,j] for i in range(100,110)for j in range(10,20)]
+    TAB_PIXEL,TABPHOTON,column, row = getData(min,max)
+    #TAB_PIXEL,TABPHOTON,column, row = getData(min,max,test)
 
     print("\nDebut de traitement de l'image...")
 

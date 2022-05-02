@@ -33,6 +33,7 @@ def newImg(column, row, TAB_PIXEL):
 def getData(min=0, max=None,select=[]):
     global Data
     global TAB_PIXEL
+    Resol = Data["Resol"]
     if max == None:
         max = min+5
 
@@ -64,11 +65,11 @@ def getData(min=0, max=None,select=[]):
                 if(not select):
                     for w in dataPhoton:
                         # incrémentation du nombre de photon
-                        TABPHOTON.append(w["dtime"])
+                        TABPHOTON.append(w["dtime"]*Resol)
                 elif ([k,j] in select):
                     for w in dataPhoton:
                         # incrémentation du nombre de photon
-                        TABPHOTON.append(w["dtime"])
+                        TABPHOTON.append(w["dtime"]*Resol)
                 TAB_PIXEL[j][k] += nb_photon
                 # affichage des infos
                 # print(f'image: {min} | ligne: {j} | pixel:{k} | nombre de photon: {nb_photon}')

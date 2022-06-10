@@ -11,6 +11,7 @@ import img as Img
 
 class CustomFunction():
     def open_file(self, dir):
+        global SelectedFile
         filetypes = [("Fichier pt3", ".pt3"), ("Fichier json", ".json")]
         filename = fd.askopenfilename(
             title='Ouvrir un fichier',

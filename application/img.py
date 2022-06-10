@@ -47,7 +47,7 @@ def getData(min=0, max=None, select=[]):
         exit(2)
     print("\nDebut de chargement de l'image...\n")
     global TAB_PIXEL
-    TAB_PIXEL = [0 for j in range(column*row)]
+    TAB_PIXEL = [[0 for j in range(column)] for i in range(row)]
     TAB_PHOTON = []
     # parcour image par image
     dataImg = Data["img"]

@@ -89,11 +89,11 @@ Data = {
 t.tic()
 
 # Variables global
-global recNum, inputfile, outputfile, numRecords,  debutlignetime, X, Y
+global recNum, inputfile, outputfile, numRecords,  debutlignetime, X, Y, Resol
 
 
 def lectureentete(inputfile):
-    global outputfile, recNum, numRecords, debutlignetime, X, Y
+    global outputfile, recNum, numRecords, debutlignetime, X, Y, Resol
 
     # Vérifiez si le fichier d'entrée est un fichier PTU valide
     # Les chaînes Python n'ont pas de caractères NULL de fin, elles sont donc supprimées
@@ -177,7 +177,7 @@ def lectureentete(inputfile):
 
 
 def readPT3(inputfile):
-    global outputfile, recNum, numRecords, debutlignetime, name, X, Y
+    global outputfile, recNum, numRecords, debutlignetime, name, X, Y,Resol
     global pt, lg, px, Data, img
     debutligne = False
     oflcount = 0
@@ -189,6 +189,7 @@ def readPT3(inputfile):
     TABPHOTON = []
     Data["X"] = X
     Data["Y"] = Y
+    Data["Resol"] = Resol
 
     for recNum in range(0, numRecords):
         # The data is stored in 32 bits that need to be divided into smaller

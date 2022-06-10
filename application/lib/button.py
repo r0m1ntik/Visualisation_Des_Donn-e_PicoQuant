@@ -219,7 +219,7 @@ class MyButton():
                 y = 10
                 for i in range(Convert.Data["Y"]):
                     for j in range(Convert.Data["X"]):
-                        color = ceil(TAB_PIXEL[i * column + j] * v)
+                        color = ceil(TAB_PIXEL[i][j] * v)
                         color = "#%02x%02x%02x" % (color, color, color)
                         creeCanvaImage(
                             self, x, y, color)

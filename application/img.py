@@ -4,7 +4,7 @@ import json
 from PIL import Image
 from math import *
 from tqdm import tqdm
-import main as Dumppt3
+import convert as Dumppt3
 import numpy as np
 import itertools
 import statistics
@@ -22,9 +22,10 @@ def newImg(column, row, TAB_PIXEL):
     img = Image.new('RGB', size=(column, row))
     for i in range(row):
         for j in range(column):
-            color = ceil(TAB_PIXEL[i][j] * v)
+            color = ceil(TAB_PIXEL[i * column + j] * v)
             img.putpixel(
                 (j, i), (color, color, color))
+
     return img
 
 ##################################################################################################
@@ -45,7 +46,7 @@ def getData(min=0, max=None):
         exit(2)
     print("\nDebut de chargement de l'image...\n")
     global TAB_PIXEL
-    TAB_PIXEL = [[0 for j in range(column)] for i in range(row)]
+    TAB_PIXEL = [0 for j in range(column*row)]
     TAB_PHOTON = []
     # parcour image par image
     dataImg = Data["img"]
@@ -64,7 +65,7 @@ def getData(min=0, max=None):
                     # incrémentation du nombre de photon
                     TAB_PHOTON.append(w["dtime"])
                     nb_photon += 1
-                TAB_PIXEL[j][k] += nb_photon
+                TAB_PIXEL[j * column + k] += nb_photon
                 # affichage des infos
                 # print(f'image: {min} | ligne: {j} | pixel:{k} | nombre de photon: {nb_photon}')
 

@@ -276,6 +276,7 @@ def main(inputfile, outputfile=None, indentation=False, name="pt3"):
 
     print("PicoHarp T3 data")
 
+    Data.clear
     Data["file"] = name
     lectureentete(inputfile)
     readPT3(inputfile)
@@ -305,17 +306,17 @@ if __name__ == "__main__":
     Indentation = False
 
     try:
-        opts, args = getopt.getopt(argv, "hi:o:")
+        opts, args = getopt.getopt(argv, "hi:o:I")
     except getopt.GetoptError:
         print(f'{color.RED_HL}Erreur lors de la recuperation des arguments{color.END}\n'
-              f'{sys.argv[0]} -i <inputfile.pt3> -j <inputfile.json> -o <outputfile>')
+              f'{sys.argv[0]} -i <inputfile.pt3> -o <outputfile>')
         sys.exit(2)
 
     for opt, arg in opts:
 
         if opt in ("-h", "--help"):
             print(f'{color.RED_HL}Pour lancer le programme:\n'
-                  f'{sys.argv[0]} -i <inputfile.pt3> -j <inputfile.json> -o <outputfile>>{color.END}')
+                  f'{sys.argv[0]} -i <inputfile.pt3> -o <outputfile>{color.END}')
             sys.exit(2)
         elif opt in ("-i", "--input"):
             inputfile = arg
@@ -326,7 +327,7 @@ if __name__ == "__main__":
 
     if (inputfile == None):
         print(f'Champ obligatoire incorrect\n'
-              f'{sys.argv[0]} {color.RED_HL}[-i <inputfile.pt3> ou -j <inputfile.json>]{color.END} -o <outputfile> -I')
+              f'{sys.argv[0]} {color.RED_HL}[-i <inputfile.pt3>]{color.END} -o <outputfile> -I')
         sys.exit(2)
 
     main(inputfile, outputfile, Indentation, name)

@@ -2,10 +2,7 @@
 from config import *
 from lib.function import *
 from lib.toolstip import *
-from tkinter import filedialog as fd
-from tkinter import Button, PhotoImage
-
-global button_5
+from tkinter import PhotoImage
 
 
 class MyWindow(Tk):

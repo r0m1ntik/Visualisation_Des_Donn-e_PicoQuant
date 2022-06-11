@@ -99,6 +99,35 @@ def affichageImg(min, max):
 
     print("\nFin de traitement de l'image.\n")
 
+def recupcercle(x = 1, y = 1, r1 = 1, r2 = 2):
+    global Data
+    res = []
+    column, row = Data["X"] , Data["Y"]
+    for i in range(row):
+        for j in range(column):
+            d = ceil(sqrt(pow(x-j,2)+pow(y-i,2)))
+            
+            if (d<=r2 and d>r1):
+                res.append([i,j])
+    return res
+
+def ecriretxt(chemin = "./testec.txt",cheminsource = "./test.pt3", x=1,y=1,r1 = 1, r2 = 2):
+    global Data
+    outputfile = io.open(chemin, "w+", encoding="utf-8")
+    outputfile.write("#"+cheminsource+"\n")
+    outputfile.write("#X,Y=%d,%d\n"%(x,y))
+    outputfile.write("#R1=%d\n"%(r1))
+    outputfile.write("#R2=%d\n"%(r2))
+    outputfile.write("#NBimage=%d\n"%(len(Data["img"])))
+    select = recupcercle(x,y,r1,r2)
+    for i in range(len(Data["img"])):
+        TAB_PIXEL,TABPHOTON,column, row = getData(i,i+1,select)
+        outputfile.write(" \n")
+        for j in TABPHOTON:
+            outputfile.write("%d\n"%(j))
+    outputfile.close()
+
+
 
 def main(tab):
     for i in tab:

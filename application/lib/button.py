@@ -32,10 +32,12 @@ class MyButton():
         canva2_y = int(canvas2['height'])/2
 
         # ACTIVATION DE LA CREATION DU CERCLE
-        global centre_x, centre_y, couronne_cree
+        global centre_x, centre_y, couronne_cree, image_cree
         global cercle_1_x, cercle_1_y, rayon_1
         global cercle_2_x, cercle_2_y, rayon_2
 
+        # si l'image est generer
+        image_cree = False
         creation_cercle = False
         couronne_cree = False
 
@@ -243,6 +245,7 @@ class MyButton():
                 self, f"Le cercle a été crée à la position x={canva2_x} y={canva2_y}")
 
         def general_open(self):
+            global image_cree
             if (CustomFunction.open_file(self, dir=OUTPUT_PATH)):
                 TAB_PIXEL, column, row = CustomFunction.select_img(
                     self, 0, 300)
@@ -260,6 +263,7 @@ class MyButton():
                         x = x + 4
                     x = 10
                     y = y + 4
+                image_cree = True
 
         def creeCanvaImage(self, x, y, color):
             self.button_5.destroy()
@@ -270,11 +274,11 @@ class MyButton():
                      lambda event: onclick(event.x, event.y))
 
         def onclick(eventx, eventy):
-            global centre_x, centre_y, creation_cercle, couronne_cree
+            global centre_x, centre_y, creation_cercle, couronne_cree, image_cree
             global cercle_1_x, cercle_1_y, rayon_1
             global cercle_2_x, cercle_2_y, rayon_2
 
-            if (not creation_cercle or couronne_cree):
+            if (not creation_cercle or couronne_cree or not image_cree):
                 return
 
             if (centre_x == 0 or centre_y == 0):
@@ -315,7 +319,76 @@ class MyButton():
             cercle_2_x = 0
             cercle_2_y = 0
 
-            # d = ceil(sqrt(pow(x-j,2)+pow(y-i,2)))
-            # x, y coordonnées du centre
-            # j, i coordonnées du points cliqué pour le rayon
-            # d le rayon
+        # rectangle de droite
+        title = Label(canvas1, text='Données du centre')
+        title.config(font=('helvetica', 14))
+        canvas1.create_window(110, 10, window=title)
+
+        labelCentreX = Label(canvas1, text="X:")
+        canvas1.create_window(15, 40, window=labelCentreX)
+        ventry1X = StringVar()
+        entry1X = Entry(canvas1, bd=0, textvariable=ventry1X)
+        canvas1.create_window(120, 40, window=entry1X)
+
+        labelCentreY = Label(canvas1, text="Y:")
+        canvas1.create_window(15, 70, window=labelCentreY)
+        ventry1Y = StringVar()
+        entry1Y = Entry(canvas1, bd=0, textvariable=ventry1Y)
+        canvas1.create_window(120, 70, window=entry1Y)
+
+        title2 = Label(canvas1, text='Données du premier cercle')
+        title2.config(font=('helvetica', 14))
+        canvas1.create_window(110, 110, window=title2)
+
+        label1X = Label(canvas1, text="X:")
+        canvas1.create_window(15, 140, window=label1X)
+        ventry2X = StringVar()
+        entry2X = Entry(canvas1, bd=0, textvariable=ventry2X)
+        canvas1.create_window(120, 140, window=entry2X)
+
+        label1Y = Label(canvas1, text="Y:")
+        canvas1.create_window(15, 170, window=label1Y)
+        ventry2Y = StringVar()
+        entry2Y = Entry(canvas1, bd=0, textvariable=ventry2Y)
+        canvas1.create_window(120, 170, window=entry2Y)
+
+        title3 = Label(canvas1, text='Données du deuxieme cercle')
+        title3.config(font=('helvetica', 14))
+        canvas1.create_window(110, 210, window=title3)
+
+        label2X = Label(canvas1, text="X:")
+        canvas1.create_window(15, 240, window=label2X)
+        ventry3X = StringVar()
+        entry3X = Entry(canvas1, bd=0, textvariable=ventry3X)
+        canvas1.create_window(120, 240, window=entry3X)
+
+        label2Y = Label(canvas1, text="Y:")
+        canvas1.create_window(15, 270, window=label2Y)
+        ventry3Y = StringVar()
+        entry3Y = Entry(canvas1, bd=0, textvariable=ventry3Y)
+        canvas1.create_window(120, 270, window=entry3Y)
+
+        button1 = Button(text='Valider', bg='brown',
+                         font=('helvetica', 14, 'bold'))
+        canvas1.create_window(110, 310, window=button1)
+
+        # valeur par default
+
+        ventry1X.set(centre_x)
+        ventry1Y.set(centre_y)
+
+        ventry2X.set(cercle_1_x)
+        ventry2Y.set(cercle_1_y)
+
+        ventry3X.set(cercle_2_x)
+        ventry3Y.set(cercle_2_y)
+
+        # l = Label(canvas1, text="Centre - x")
+        # l.pack(side=LEFT)
+        # e = Entry(canvas1, bd=2)
+        # e.pack(side=RIGHT)
+
+        # d = ceil(sqrt(pow(x-j,2)+pow(y-i,2)))
+        # x, y coordonnées du centre
+        # j, i coordonnées du points cliqué pour le rayon
+        # d le rayon

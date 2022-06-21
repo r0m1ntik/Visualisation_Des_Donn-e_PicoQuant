@@ -57,25 +57,6 @@ class MyButton():
         # j, i coordonnées du points cliqué pour le rayon
         # d le rayon
 
-        ######################## BOTTON 3 ########################
-        self.button_image_3 = PhotoImage(
-            file=Config.relative_to_assets("button_3.png"))
-        self.button_3 = Button(
-            image=self.button_image_3,
-            borderwidth=0,
-            highlightthickness=0,
-            command=lambda: print("Sauvegarder"),
-            relief="flat"
-        )
-        self.button_3.place(
-            x=40.0,
-            y=0.0,
-            width=30.0,
-            height=30.0
-        )
-        CreateToolTip(self.button_3, text='Sauvegarder')
-        ######################## FIN BOTTON 3 ########################
-
         ######################## BOTTON 4 ########################
         self.button_image_4 = PhotoImage(
             file=Config.relative_to_assets("button_4.png"))
@@ -127,51 +108,13 @@ class MyButton():
             relief="flat"
         )
         self.button_6.place(
-            x=250.0,
+            x=40.0,
             y=0.0,
             width=30.0,
             height=30.0
         )
         CreateToolTip(self.button_6, text='Crée un cercle')
         ######################## FIN BOTTON 6 ########################
-
-        ######################## BOTTON 7 ############################
-        self.button_image_7 = PhotoImage(
-            file=Config.relative_to_assets("button_7.png"))
-        self.button_7 = Button(
-            image=self.button_image_7,
-            borderwidth=0,
-            highlightthickness=0,
-            command=lambda: print("button_7 clicked"),
-            relief="flat"
-        )
-        self.button_7.place(
-            x=285.0,
-            y=0.0,
-            width=30.0,
-            height=30.0
-        )
-        CreateToolTip(self.button_7, text='Agrandir la taille du cercle')
-        ######################## FIN BOTTON 7 ########################
-
-        ######################## BOTTON 8 ############################
-        self.button_image_8 = PhotoImage(
-            file=Config.relative_to_assets("button_8.png"))
-        self.button_8 = Button(
-            image=self.button_image_8,
-            borderwidth=0,
-            highlightthickness=0,
-            command=lambda: print("button_8 clicked"),
-            relief="flat"
-        )
-        self.button_8.place(
-            x=320.0,
-            y=0.0,
-            width=30.0,
-            height=30.0
-        )
-        CreateToolTip(self.button_8, text='Reduire la taille du cercle')
-        ######################## FIN BOTTON 8 ########################
 
         def activate_create_cercle(self):
             global creation_cercle
@@ -286,14 +229,13 @@ class MyButton():
             rayon_2 = 0
 
         def recharge_donnee(self):
-            global rayon_1, rayon_2, centre_x, centre_y, canva2_cercle1, canva2_cercle2, couronne_cree
+            global rayon_1, rayon_2, centre_x, centre_y, canva2_cercle1, canva2_cercle2
             centre_x = int(ventry1X.get())
             centre_y = int(ventry1Y.get())
             rayon_1 = int(rayoncercle1.get())
             rayon_2 = int(rayoncercle2.get())
             canvas2.delete(canva2_cercle1)
             canvas2.delete(canva2_cercle2)
-            Config.couronne_cree = False
             cree_cercle_apartir_button(self)
             mise_a_jour_donnee(self)
 

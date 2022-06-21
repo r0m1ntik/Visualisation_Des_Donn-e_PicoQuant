@@ -68,13 +68,11 @@ def getData(min=0, max=None, select=[]):
                     for w in dataPhoton:
                         # incrémentation du nombre de photon
                         TAB_PHOTON.append(w["dtime"]*Resol)
-                elif ([k, j] in select):
+                elif ([j, k] in select):
                     for w in dataPhoton:
                         # incrémentation du nombre de photon
                         TAB_PHOTON.append(w["dtime"]*Resol)
                 TAB_PIXEL[j][k] += nb_photon
-                # affichage des infos
-                # print(f'image: {min} | ligne: {j} | pixel:{k} | nombre de photon: {nb_photon}')
 
     print("\nFin de chargement de l'image.")
     return TAB_PIXEL, TAB_PHOTON, column, row
@@ -127,7 +125,7 @@ def ecriretxt(chemin="./testec.txt", cheminsource="./test.pt3", x=1, y=1, r1=1, 
         TAB_PIXEL, TABPHOTON, column, row = getData(i, i+1, select)
         outputfile.write(" \n")
         for j in TABPHOTON:
-            outputfile.write("%d\n" % (j))
+            outputfile.write("%f\n" % (j))
     outputfile.close()
 
 

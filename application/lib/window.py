@@ -41,13 +41,13 @@ class MyWindow(Tk):
         self.bind_all(
             "<Control-o>", lambda x: CustomFunction.open_file(self, dir=OUTPUT_PATH))
 
-        ########### SAUVEGARDER ###########
-        menu_file.add_command(label="Sauvegarder",
+        ########### Generer TXT ###########
+        menu_file.add_command(label="Generer TXT",
                               underline=0,
                               accelerator="CTRL+S",
-                              command=lambda: CustomFunction.do_something(self))
+                              command=lambda: CustomFunction.save_file(self, dir=OUTPUT_PATH))
         self.bind_all(
-            "<Control-s>", lambda x: CustomFunction.do_something(self))
+            "<Control-s>", lambda x: CustomFunction.save_file(self, dir=OUTPUT_PATH))
 
         ########### QUITTER ###########
         menu_file.add_separator()

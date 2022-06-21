@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from config import *
+import config as Config
 import os
 from lib.toolstip import *
 from tkinter import filedialog as fd
@@ -20,13 +20,43 @@ class CustomFunction():
         )
 
         if (filename):
-            SelectedFile = filename
+            Config.SelectedFile = filename
             root, extension = os.path.splitext(filename)
             CustomFunction.read_file(self, filename, extension)
             return True
         else:
             showinfo("", "Aucun fichier selectionné !")
             return False
+
+    def generationTxt(self):
+        if (Config.SelectedFile == ""):
+            showinfo("", "Aucun fichier choisi !")
+            return False
+        if (not Config.image_cree):
+            showinfo("", "Aucune image generée !")
+            return False
+        if (not Config.couronne_cree):
+            showinfo("", "Aucune couronne generée !")
+            return False
+        else:
+            return True
+
+    def save_file(self, dir):
+        if (CustomFunction.generationTxt(self)):
+            filename = fd.asksaveasfilename(
+                title='Sauvegarder le fichier',
+                initialdir=dir
+            )
+
+            if (filename):
+                Config.SaveFile = filename
+                root, extension = os.path.splitext(filename)
+                Img.ecriretxt(filename, Config.SelectedFile,
+                              Config.config_center_x, Config.config_center_y, min(Config.config_rayon_1, Config.config_rayon_2), max(Config.config_rayon_1, Config.config_rayon_2))
+                return True
+            else:
+                showinfo("", "Aucun fichier selectionné !")
+                return False
 
     def read_file(self, filename, extension):
         if (extension == '.pt3'):
@@ -53,7 +83,7 @@ class CustomFunction():
 
     def do_about(self):
         showinfo("A propos",
-                 f"{AppName}\nVersion: {AppVersion}{AppDev}{AppGit}")
+                 f"{Config.AppName}\nVersion: {Config.AppVersion}{Config.AppDev}{Config.AppGit}")
 
     def error_log(self, msg):
         print(f'\033[31m[LOG]: {msg}\033[0m')

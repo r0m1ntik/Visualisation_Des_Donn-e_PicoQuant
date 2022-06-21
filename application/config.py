@@ -21,3 +21,11 @@ AppGit = "https://git.univ-pau.fr/rbadanin/visualisation_des_donnee_picoquant"
 
 
 SelectedFile = ""
+SaveFile = ""
+image_cree = False
+couronne_cree = False
+
+config_rayon_1 = 0
+config_rayon_2 = 0
+config_center_x = 0
+config_center_y = 0

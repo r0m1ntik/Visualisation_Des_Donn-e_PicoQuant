@@ -5,7 +5,8 @@ from numpy import sqrt
 from lib.toolstip import *
 from lib.function import *
 from PIL import ImageTk, Image
-from config import relative_to_assets, OUTPUT_PATH, SelectedFile
+# from config import relative_to_assets, OUTPUT_PATH, couronne_cree, image_cree, config_rayon_1, config_rayon_2, config_center_x, config_center_y
+import config as Config
 
 
 class MyButton():
@@ -33,14 +34,12 @@ class MyButton():
         canva2_y = int(canvas2['height'])/2
 
         # ACTIVATION DE LA CREATION DU CERCLE
-        global centre_x, centre_y, couronne_cree, image_cree
+        global centre_x, centre_y
         global cercle_1_x, cercle_1_y, rayon_1
         global cercle_2_x, cercle_2_y, rayon_2
 
         # si l'image est generer
-        image_cree = False
         creation_cercle = False
-        couronne_cree = False
 
         centre_x = 0
         centre_y = 0
@@ -60,7 +59,7 @@ class MyButton():
 
         ######################## BOTTON 3 ########################
         self.button_image_3 = PhotoImage(
-            file=relative_to_assets("button_3.png"))
+            file=Config.relative_to_assets("button_3.png"))
         self.button_3 = Button(
             image=self.button_image_3,
             borderwidth=0,
@@ -79,7 +78,7 @@ class MyButton():
 
         ######################## BOTTON 4 ########################
         self.button_image_4 = PhotoImage(
-            file=relative_to_assets("button_4.png"))
+            file=Config.relative_to_assets("button_4.png"))
         self.button_4 = Button(
             image=self.button_image_4,
             borderwidth=0,
@@ -98,7 +97,7 @@ class MyButton():
 
         ######################## BOTTON 5 ############################
         self.button_image_5 = PhotoImage(
-            file=relative_to_assets("button_5.png"))
+            file=Config.relative_to_assets("button_5.png"))
         self.button_5 = Button(
             image=self.button_image_5,
             borderwidth=0,
@@ -117,7 +116,7 @@ class MyButton():
 
         ######################## BOTTON 6 ############################
         self.button_image_6 = PhotoImage(
-            file=relative_to_assets("button_6.png"))
+            file=Config.relative_to_assets("button_6.png"))
         self.button_6 = Button(
             image=self.button_image_6,
             borderwidth=0,
@@ -138,7 +137,7 @@ class MyButton():
 
         ######################## BOTTON 7 ############################
         self.button_image_7 = PhotoImage(
-            file=relative_to_assets("button_7.png"))
+            file=Config.relative_to_assets("button_7.png"))
         self.button_7 = Button(
             image=self.button_image_7,
             borderwidth=0,
@@ -157,7 +156,7 @@ class MyButton():
 
         ######################## BOTTON 8 ############################
         self.button_image_8 = PhotoImage(
-            file=relative_to_assets("button_8.png"))
+            file=Config.relative_to_assets("button_8.png"))
         self.button_8 = Button(
             image=self.button_image_8,
             borderwidth=0,
@@ -207,10 +206,9 @@ class MyButton():
                 self, f"Le cercle a été crée à la position x={canva2_x} y={canva2_y}")
 
         def general_open(self):
-            global image_cree
-            if (CustomFunction.open_file(self, dir=OUTPUT_PATH)):
+            if (CustomFunction.open_file(self, dir=Config.OUTPUT_PATH)):
                 TAB_PIXEL, column, row = CustomFunction.select_img(
-                    self, 0, 300)
+                    self, 0, len(Convert.Data["img"]))
                 # print(TAB_PIXEL)
                 v = max(itertools.chain.from_iterable(TAB_PIXEL))
                 v = 256 / v
@@ -225,7 +223,7 @@ class MyButton():
                         x = x + 1
                     x = 0
                     y = y + 1
-                image_cree = True
+                Config.image_cree = True
 
         def creeCanvaImage(self, x, y, color):
             self.button_5.destroy()
@@ -236,11 +234,11 @@ class MyButton():
                      lambda event: generer_cercle(event.x, event.y))
 
         def generer_cercle(eventx, eventy):
-            global centre_x, centre_y, creation_cercle, couronne_cree, image_cree
+            global centre_x, centre_y, creation_cercle
             global cercle_1_x, cercle_1_y, rayon_1
             global cercle_2_x, cercle_2_y, rayon_2
 
-            if (not creation_cercle or couronne_cree or not image_cree):
+            if (not creation_cercle or Config.couronne_cree or not Config.image_cree):
                 return
 
             if (centre_x == 0 or centre_y == 0):
@@ -270,8 +268,10 @@ class MyButton():
                           eventx, "| y:", eventy, "| rayon: ", rayon_2)
                     # On met a faut la création du cercle
                     creation_cercle = False
-                    couronne_cree = True
+                    Config.couronne_cree = True
+                    Config.image_cree = True
                     print("La couronne a bien été crée.")
+                    mise_a_jour_donnee(self)
                     # reset_coordonnee(self)
 
         def reset_coordonnee(self):
@@ -293,8 +293,15 @@ class MyButton():
             rayon_2 = int(rayoncercle2.get())
             canvas2.delete(canva2_cercle1)
             canvas2.delete(canva2_cercle2)
-            couronne_cree = False
+            Config.couronne_cree = False
             cree_cercle_apartir_button(self)
+            mise_a_jour_donnee(self)
+
+        def mise_a_jour_donnee(self):
+            Config.config_rayon_1 = rayon_1
+            Config.config_rayon_2 = rayon_2
+            Config.config_center_x = centre_x
+            Config.config_center_y = centre_y
 
         def cree_cercle_apartir_button(self):
             global rayon_1, rayon_2, cercle_2_x, cercle_2_y, centre_x, centre_y, canva2_cercle1, canva2_cercle

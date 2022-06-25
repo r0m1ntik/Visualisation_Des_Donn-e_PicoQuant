@@ -26,6 +26,9 @@ class MyButton():
         max_x = 50
         max_y = 50
 
+        canva2_cercle1 = 0
+        canva2_cercle2 = 0
+
         # position de l'image
         img_pos_x = 0
         img_pos_y = 0
@@ -230,6 +233,10 @@ class MyButton():
 
         def recharge_donnee(self):
             global rayon_1, rayon_2, centre_x, centre_y, canva2_cercle1, canva2_cercle2
+            if (not canva2_cercle2 or not canva2_cercle1):
+                print("Aucun cercle n'est crée.")
+                return
+
             centre_x = int(ventry1X.get())
             centre_y = int(ventry1Y.get())
             rayon_1 = int(rayoncercle1.get())

@@ -91,7 +91,8 @@ t.tic()
 # Variables global
 global recNum, inputfile, outputfile, numRecords,  debutlignetime, X, Y, Resol
 
-
+# lectureentete prepare les valeurs pour l'extraction 
+# inputfile : flux de lecture sur le fichier pt3
 def lectureentete(inputfile):
     global outputfile, recNum, numRecords, debutlignetime, X, Y, Resol
 
@@ -154,6 +155,7 @@ def lectureentete(inputfile):
 
     inputfile.read(184)
 
+    # valeur stocké dans le json 
     Resol = struct.unpack("f", inputfile.read(4))[0]
     print("Resol : ", Resol)
 
@@ -161,8 +163,10 @@ def lectureentete(inputfile):
 
     Record = struct.unpack("<i", inputfile.read(4))[0]
     print("Record : ", Record)
+    
+    # taille de l'entete spécial
     unuse = struct.unpack("<i", inputfile.read(4))[0]
-    # inputfile.read(unuse*4)
+    
     inputfile.read(24)
     X = struct.unpack("<i", inputfile.read(4))[0]
     Y = struct.unpack("<i", inputfile.read(4))[0]
@@ -175,7 +179,8 @@ def lectureentete(inputfile):
     print("Écriture de {}%d{} enregistrements, cela peut prendre un certain temps...".format(
         color.RED_HL, color.END) % numRecords)
 
-
+# readPT3 rempli la structure de donné Data 
+# inputfile : flux de lecture sur le fichier pt3
 def readPT3(inputfile):
     global outputfile, recNum, numRecords, debutlignetime, name, X, Y,Resol
     global pt, lg, px, Data, img
@@ -187,6 +192,8 @@ def readPT3(inputfile):
     numimg = 0
     i = 0
     TABPHOTON = []
+
+    # ajout des variable dans la structure
     Data["X"] = X
     Data["Y"] = Y
     Data["Resol"] = Resol
@@ -214,28 +221,27 @@ def readPT3(inputfile):
             if dtime == 0:  # Not a marker, so overflow
                 oflcount += 1
             else:
-                if dtime == 4:
+                if dtime == 4: # debut image
                     numimg += 1
                     debutligne = 0
                     numligne = 0
 
-                if dtime == 1:
+                if dtime == 1: # debut ligne
                     debutlignetime = truensync
                     numpixel = 0
                     numligne += 1
                     debutligne = True
 
-                if dtime == 2:
+                if dtime == 2: # fin de ligne
                     debutligne = False
                     intervale = (truensync - debutlignetime) / X
                     px["pt"] = []
+                    # ajout des photon dans les pixel
                     for i in range(X):
                         numpixel += 1
                         px["pt"] = []
                         lg["px"].append(copy.copy(px))
                         px["px"] = numpixel
-                    # print(numimg)
-                    # print(numligne)
                     for i in TABPHOTON:
                         npx = floor((i["nsync"]-debutlignetime) / intervale)
                         if npx >= X:  # il arrive parfois que la valeur nsync = truesync de fin de ligne
@@ -244,17 +250,19 @@ def readPT3(inputfile):
                         pt["nsync"] = i["nsync"]
                         lg["px"][npx]["pt"].append(copy.copy(pt))
 
+
+                    #finalisation de la structure
                     TABPHOTON = []
                     lg["nlg"] = numligne
                     img["lg"].append(copy.copy(lg))
                     lg["px"] = []
-                    if numligne == Y:
+                    if numligne == Y: # fin de l'image
                         img["nimg"] = numimg
                         Data["img"].append(copy.copy(img))
                         img["lg"] = []
 
         else:
-            if debutligne:
+            if debutligne: #detection d'un photon
                 if channel == 0 or channel > 4:  # Should not occur
                     print("Illegal Channel: # %1u" % (channel))
                 # stockage du photon
@@ -263,16 +271,20 @@ def readPT3(inputfile):
                 TABPHOTON.append(copy.copy(pt))
                 pt.clear
 
-        if recNum % 100000 == 0:
+        if recNum % 100000 == 0:# affichage de la progression
             sys.stdout.write("\r{}La progression: %.1f%% -- %.5f seconds{}".format(color.GREEN, color.END) %
                              (float(recNum)*100/float(numRecords), t.tocvalue()))
             sys.stdout.flush()
 
-
+# fonction main
+# inputfile  : fichier d'entrée .pt3
+# outputfile : fichier de sortie.json
+# indentation : booléen parametre pour l'écriture du .json
+# name : nom du programme qui genere le json
 def main(inputfile, outputfile=None, indentation=False, name="pt3"):
     global recNum, numRecords, debutlignetime
 
-    # Lecture du 2eme argument (r : lecture - b : format binaire)
+    # ouverture du pt3 (r : lecture - b : format binaire)
     inputfile = open(inputfile, "rb")
 
     print("PicoHarp T3 data")
@@ -298,7 +310,7 @@ def main(inputfile, outputfile=None, indentation=False, name="pt3"):
         outputfile.close()
         t.toc('Temps d\'ecriture en json est de')
 
-
+# ne se lance que si c'est le programme appelé par ligne de commande
 if __name__ == "__main__":
     name = sys.argv[0]
     argv = sys.argv[1:]

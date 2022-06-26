@@ -14,7 +14,11 @@ import matplotlib.pyplot as plt
 # creation et initialisation d'un tableau de pixel pour notre image
 global Data
 
-
+# newImg génére une image a afficher
+# column,row : nombre de colonne et ligne dans l'image
+# TAB_PIXEL : tableau contenant le nombre de photon par pixel
+# return : 
+#           img : objet de type image affichable
 def newImg(column, row, TAB_PIXEL):
     k = itertools.chain.from_iterable(TAB_PIXEL)
     v = max(k)
@@ -29,15 +33,21 @@ def newImg(column, row, TAB_PIXEL):
 
     return img
 
-##################################################################################################
-
-
+# getData extrait les donnée pour la/les image(s) selectionné
+# min : la premiere image a extraire
+# max : la derniere image a extraire(non comprise)
+# select : la liste des pixel selectionné pour l'extraction des photon
+# return : 
+#           TAB_PIXEL : tableau contenant le nombre de photon par pixel
+#           TAB_PHOTON : tableu contenant la liste de tout les photon pour les pixel selectionné
+#                               si aucun pixel n'as ete selectionné retourne l'integralité des photon
+#            column,row : nombre de colonne et ligne dans l'image
 def getData(min=0, max=None, select=[]):
     global Data
     global TAB_PIXEL
     Resol = Data["Resol"]
     if max == None:
-        max = min+5
+        max = min+1
 
     column, row = Data["X"], Data["Y"]
 
@@ -64,11 +74,11 @@ def getData(min=0, max=None, select=[]):
                 # parcour photon par photon
                 dataPhoton = dataPixel[k]["pt"]
                 nb_photon = len(dataPhoton)
-                if (not select):
+                if (not select): # image entiere
                     for w in dataPhoton:
                         # incrémentation du nombre de photon
                         TAB_PHOTON.append(w["dtime"]*Resol)
-                elif ([j, k] in select):
+                elif ([j, k] in select): # uniquement si une zone a été selectioné
                     for w in dataPhoton:
                         # incrémentation du nombre de photon
                         TAB_PHOTON.append(w["dtime"]*Resol)
